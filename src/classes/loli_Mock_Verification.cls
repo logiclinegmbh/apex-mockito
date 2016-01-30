@@ -1,7 +1,7 @@
 /**
  * Contains details about a (sub) set of invokations for a specific method
  */
-public with sharing class loli_Mock_Verifikation {
+public with sharing class loli_Mock_Verification {
 
     public String methodName {get; private set;}
     public List<loli_Mock_Invokation> invokations {get; private set;}
@@ -15,12 +15,12 @@ public with sharing class loli_Mock_Verifikation {
         }
     }
 
-    public loli_Mock_Verifikation(String methodName) {
+    public loli_Mock_Verification(String methodName) {
         invokations = new List<loli_Mock_Invokation>();
         this.methodName = methodName;
     }
 
-    public loli_Mock_Verifikation(String methodName, List<loli_Mock_Invokation> invokations) {
+    public loli_Mock_Verification(String methodName, List<loli_Mock_Invokation> invokations) {
         this(methodName);
         this.invokations = invokations;
     }
@@ -30,11 +30,11 @@ public with sharing class loli_Mock_Verifikation {
     }
 
     public Boolean equals(Object compare) {
-        if (!(compare instanceof loli_Mock_Verifikation)) {
+        if (!(compare instanceof loli_Mock_Verification)) {
             return false;
         }
 
-        loli_Mock_Verifikation invokationDetailsCompare = (loli_Mock_Verifikation) compare;
+        loli_Mock_Verification invokationDetailsCompare = (loli_Mock_Verification) compare;
         return methodName == invokationDetailsCompare.methodName && areInvokationsEqual(invokationDetailsCompare.invokations);
     }
 
