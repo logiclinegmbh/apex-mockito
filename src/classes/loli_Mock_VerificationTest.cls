@@ -7,16 +7,16 @@ public with sharing class loli_Mock_VerificationTest {
 
     private static TestMethod void addInvokation() {
         String methodName = 'testMethod';
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation >();
-        loli_Mock_Verification testDetails = new loli_Mock_Verification(methodName, invokations);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation >();
+        loli_Mock_Verification testVerification = new loli_Mock_Verification(methodName, invocations);
 
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation  newInvokation = new loli_Mock_Invokation (methodName, invokationParameters);
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation newInvocation = new loli_Mock_Invocation (methodName, invocationParameters);
 
-        testDetails.addInvokation(newInvokation);
+        testVerification.addInvokation(newInvocation);
 
-        System.assertEquals(1, testDetails.invokations.size());
-        System.assertEquals(newInvokation, testDetails.invokations.get(0));
+        System.assertEquals(1, testVerification.invocations.size());
+        System.assertEquals(newInvocation, testVerification.invocations.get(0));
     }
 
     //--------- calledCount --------//
@@ -25,33 +25,33 @@ public with sharing class loli_Mock_VerificationTest {
 
     private static TestMethod void calledCount_Single() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation  invokation = new loli_Mock_Invokation (methodName, invokationParameters);
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation > {invokation};
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation};
 
-        loli_Mock_Verification invokationDetails = new loli_Mock_Verification(methodName, invokations);
+        loli_Mock_Verification verification = new loli_Mock_Verification(methodName, invocations);
 
-        System.assertEquals(1, invokationDetails.calledCount);
+        System.assertEquals(1, verification.calledCount);
     }
 
     private static TestMethod void calledCount_Multiple() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation  invokation = new loli_Mock_Invokation (methodName, invokationParameters);
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation > {invokation, invokation, invokation, invokation};
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation, invocation, invocation, invocation};
 
-        loli_Mock_Verification invokationDetails = new loli_Mock_Verification(methodName, invokations);
+        loli_Mock_Verification verification = new loli_Mock_Verification(methodName, invocations);
 
-        System.assertEquals(4, invokationDetails.calledCount);
+        System.assertEquals(4, verification.calledCount);
     }
 
     private static TestMethod void calledCount_NoCall() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
+        List<Object> invocationParameters = new List<Object> {10, 12};
 
-        loli_Mock_Verification invokationDetails = new loli_Mock_Verification(methodName, null);
+        loli_Mock_Verification verification = new loli_Mock_Verification(methodName, null);
 
-        System.assertEquals(0, invokationDetails.calledCount);
+        System.assertEquals(0, verification.calledCount);
     }
 
 
@@ -61,62 +61,62 @@ public with sharing class loli_Mock_VerificationTest {
 
     private static TestMethod void Equals() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation  invokation = new loli_Mock_Invokation (methodName, invokationParameters);
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation > {invokation};
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation};
 
-        loli_Mock_Verification invokationDetailsBase = new loli_Mock_Verification(methodName, invokations);
-        loli_Mock_Verification invokationDetailsCompare = new loli_Mock_Verification(methodName, invokations);
+        loli_Mock_Verification verificationBase = new loli_Mock_Verification(methodName, invocations);
+        loli_Mock_Verification verificationCompare = new loli_Mock_Verification(methodName, invocations);
 
-        System.assertEquals(invokationDetailsBase, invokationDetailsCompare);
+        System.assertEquals(verificationBase, verificationCompare);
     }
 
     private static TestMethod void Equals_NotEquals_Methodname() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation invokation = new loli_Mock_Invokation (methodName, invokationParameters);
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation > {invokation};
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation};
 
-        loli_Mock_Verification invokationDetailsBase = new loli_Mock_Verification('otherName', invokations);
-        loli_Mock_Verification invokationDetailsCompare = new loli_Mock_Verification(methodName, invokations);
+        loli_Mock_Verification verificationBase = new loli_Mock_Verification('otherName', invocations);
+        loli_Mock_Verification verificationCompare = new loli_Mock_Verification(methodName, invocations);
 
-        System.assertNotEquals(invokationDetailsBase, invokationDetailsCompare);
+        System.assertNotEquals(verificationBase, verificationCompare);
     }
 
     private static TestMethod void Equals_NotEquals_InvokationValues() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation  invokation = new loli_Mock_Invokation (methodName, invokationParameters);
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation > {invokation};
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation};
 
-        loli_Mock_Verification invokationDetailsBase = new loli_Mock_Verification(methodName, invokations);
-        loli_Mock_Verification invokationDetailsCompare = new loli_Mock_Verification(methodName,
-                new List<loli_Mock_Invokation > {new loli_Mock_Invokation ('otherName', invokationParameters)});
+        loli_Mock_Verification verificationBase = new loli_Mock_Verification(methodName, invocations);
+        loli_Mock_Verification verificationCompare = new loli_Mock_Verification(methodName,
+                new List<loli_Mock_Invocation > {new loli_Mock_Invocation ('otherName', invocationParameters)});
 
-        System.assertNotEquals(invokationDetailsBase, invokationDetailsCompare);
+        System.assertNotEquals(verificationBase, verificationCompare);
     }
 
     private static TestMethod void Equals_NotEquals_Invokations_Null() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation  invokation = new loli_Mock_Invokation (methodName, invokationParameters);
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation > {invokation};
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation};
 
-        loli_Mock_Verification invokationDetailsBase = new loli_Mock_Verification(methodName, null);
-        loli_Mock_Verification invokationDetailsCompare = new loli_Mock_Verification(methodName, invokations);
+        loli_Mock_Verification verificationBase = new loli_Mock_Verification(methodName, null);
+        loli_Mock_Verification verificationCompare = new loli_Mock_Verification(methodName, invocations);
 
-        System.assertNotEquals(invokationDetailsBase, invokationDetailsCompare);
+        System.assertNotEquals(verificationBase, verificationCompare);
     }
 
     private static TestMethod void Equals_NotEquals_Invokations_Null_Compare() {
         String methodName = 'testMethod';
-        List<Object> invokationParameters = new List<Object> {10, 12};
-        loli_Mock_Invokation  invokation = new loli_Mock_Invokation (methodName, invokationParameters);
-        List<loli_Mock_Invokation > invokations = new List<loli_Mock_Invokation > {invokation};
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation};
 
-        loli_Mock_Verification invokationDetailsBase = new loli_Mock_Verification(methodName, invokations);
-        loli_Mock_Verification invokationDetailsCompare = new loli_Mock_Verification(methodName, null);
+        loli_Mock_Verification verificationBase = new loli_Mock_Verification(methodName, invocations);
+        loli_Mock_Verification verificationCompare = new loli_Mock_Verification(methodName, null);
 
-        System.assertNotEquals(invokationDetailsBase, invokationDetailsCompare);
+        System.assertNotEquals(verificationBase, verificationCompare);
     }
 }

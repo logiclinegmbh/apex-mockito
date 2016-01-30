@@ -1,14 +1,14 @@
 /**
- * Contains details about a (sub) set of invokations for a specific method
+ * Contains details about a (sub) set of invocations for a specific method
  */
 public with sharing class loli_Mock_Verification {
 
     public String methodName {get; private set;}
-    public List<loli_Mock_Invokation> invokations {get; private set;}
+    public List<loli_Mock_Invocation> invocations {get; private set;}
     public Integer calledCount {
         get {
-            if (invokations != null && !invokations.isEmpty()) {
-                return invokations.size();
+            if (invocations != null && !invocations.isEmpty()) {
+                return invocations.size();
             } else {
                 return 0;
             }
@@ -16,17 +16,17 @@ public with sharing class loli_Mock_Verification {
     }
 
     public loli_Mock_Verification(String methodName) {
-        invokations = new List<loli_Mock_Invokation>();
+        invocations = new List<loli_Mock_Invocation>();
         this.methodName = methodName;
     }
 
-    public loli_Mock_Verification(String methodName, List<loli_Mock_Invokation> invokations) {
+    public loli_Mock_Verification(String methodName, List<loli_Mock_Invocation> invocations) {
         this(methodName);
-        this.invokations = invokations;
+        this.invocations = invocations;
     }
 
-    public void addInvokation(loli_Mock_Invokation invokationElement) {
-        invokations.add(invokationElement);
+    public void addInvokation(loli_Mock_Invocation invokationElement) {
+        invocations.add(invokationElement);
     }
 
     public Boolean equals(Object compare) {
@@ -34,8 +34,8 @@ public with sharing class loli_Mock_Verification {
             return false;
         }
 
-        loli_Mock_Verification invokationDetailsCompare = (loli_Mock_Verification) compare;
-        return methodName == invokationDetailsCompare.methodName && areInvokationsEqual(invokationDetailsCompare.invokations);
+        loli_Mock_Verification verificationCompare = (loli_Mock_Verification) compare;
+        return methodName == verificationCompare.methodName && areInvocationsEqual(verificationCompare.invocations);
     }
 
         /**
@@ -45,21 +45,21 @@ public with sharing class loli_Mock_Verification {
         System.assertEquals(count, calledCount);
     }
 
-    private Boolean areInvokationsEqual(List<loli_Mock_Invokation> invokationsCompare) {
-        if (invokations != null) {
-            if (invokationsCompare == null || invokations.size() != invokationsCompare.size()) {
+    private Boolean areInvocationsEqual(List<loli_Mock_Invocation> invocationsCompare) {
+        if (invocations != null) {
+            if (invocationsCompare == null || invocations.size() != invocationsCompare.size()) {
                 return false;
             }
 
-            for (Integer invokationIndex = 0; invokationIndex < invokations.size(); invokationIndex++) {
-                loli_Mock_Invokation loli_Mock_Invokation = invokations.get(invokationIndex);
-                loli_Mock_Invokation invokationCompare = invokationsCompare.get(invokationIndex);
-                if (loli_Mock_Invokation != invokationCompare) {
+            for (Integer invokationIndex = 0; invokationIndex < invocations.size(); invokationIndex++) {
+                loli_Mock_Invocation invocationBase = invocations.get(invokationIndex);
+                loli_Mock_Invocation invocationCompare = invocationsCompare.get(invokationIndex);
+                if (invocationBase != invocationCompare) {
                     return false;
                 }
             }
             return true;
-        } else if (invokationsCompare != null){
+        } else if (invocationsCompare != null){
             return false;
         }
 
