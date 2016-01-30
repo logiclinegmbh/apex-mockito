@@ -10,7 +10,7 @@ public with sharing class loli_MockTest {
         }
 
         public String mockMethodEmptyParameters() {
-            return null;
+            return (String) super.doInvocation('mockMethodEmptyParameters');
         }
 
     }
@@ -130,6 +130,23 @@ public with sharing class loli_MockTest {
         System.assertEquals(cannedResponseExpected, cannedResponses.get(0));
     }
 
+    public static TestMethod void when_Single_MethodWithNoParameters() {
+        String methodName = 'mockMethodEmptyParameters';
+        String answer = 'hello World';
+        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName);
+        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocationExpected.methodName,
+                invocationExpected, new Answer(answer));
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethodEmptyParameters()).thenReturn(answer);
+
+        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+
+        System.assert(cannedResponses != null);
+        System.assertEquals(1, cannedResponses.size());
+        System.assertEquals(cannedResponseExpected, cannedResponses.get(0));
+    }
+
     public static TestMethod void when_Multiple() {
         String methodName = 'mockMethod';
         String answer = 'hello World';
@@ -152,6 +169,53 @@ public with sharing class loli_MockTest {
         System.assertEquals(2, cannedResponses.size());
         System.assertEquals(cannedResponseExpected, cannedResponses.get(0));
         System.assertEquals(otherCannedResponse, cannedResponses.get(1));
+    }
+
+
+    //----------------------------- doInvocation ----------------------------------//
+
+    //---- Happy path ----//
+
+    public static TestMethod void doInvocation_When_Single() {
+        String answer = 'hello World';
+        List<Object> params = new List<Object> {10, 12};
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenReturn(answer);
+
+        String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
+
+        System.assert(answerReturned != null);
+        System.assertEquals(answer, answerReturned);
+    }
+
+    public static TestMethod void doInvocation_When_NoParameters() {
+        String answer = 'hello World';
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethodEmptyParameters()).thenReturn(answer);
+
+        String answerReturned = testMock.mockMethodEmptyParameters();
+
+        System.assert(answerReturned != null);
+        System.assertEquals(answer, answerReturned);
+    }
+
+    public static TestMethod void doInvocation_When_Multiple() {
+        String answer = 'hello World';
+        Integer otherAnswer = 0;
+        List<Object> params = new List<Object> {10, 12};
+        List<Object> otherParams = new List<Object> {16, 18};
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenReturn(answer);
+        testMock.when().invocation(testMock.mockMethod(otherParams.get(0), otherParams.get(1))).thenReturn(otherAnswer);
+
+        String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
+
+        System.assert(answerReturned != null);
+        System.assertEquals(answer, answerReturned);
+
     }
 
 }

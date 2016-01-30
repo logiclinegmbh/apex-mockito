@@ -9,7 +9,27 @@ public interface loli_IMock {
     void addCannedResponse(loli_Mock_CannedResponse newCannedResponse);
 
     /**
+     * Returns mocked responses for a method
+     */
+    List<loli_Mock_CannedResponse> getResponses(String methodName);
+
+    /**
      * Hanles an invocation
      */
     loli_Mock_Expectation invocation(Object fromInvocation);
+
+    /**
+     * Starts mocking
+     */
+    loli_IMock when();
+
+    /**
+     * Invocation handler for calls to mock methods
+     */
+    Object doInvocation(String methodName, List<Object> parameters);
+
+    /**
+     * Invocation handler for calls to mock methods
+     */
+    Object doInvocation(String methodName);
 }

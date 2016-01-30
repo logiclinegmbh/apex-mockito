@@ -20,7 +20,23 @@ public with sharing class loli_Mock_ExpectationTest {
             validator.validateAddCannedResponse(newCannedResponse);
         }
 
-        public loli_Mock_Expectation invocation(String methodName, List<Object> parameters) {
+        public loli_Mock_Expectation invocation(Object fromInvocation) {
+            return null;
+        }
+
+        public List<loli_Mock_CannedResponse> getResponses(String methodName) {
+            return null;
+        }
+
+        public loli_IMock when() {
+            return null;
+        }
+
+        public Object doInvocation(String methodName, List<Object> parameters) {
+            return null;
+        }
+
+        public Object doInvocation(String methodName) {
             return null;
         }
 

@@ -44,7 +44,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
     public Object doInvocation(String methodName, List<Object> parameters) {
         if (mockStatus == Status.inExecution) {
-            return null;
+            return invokeCannedResponse(new loli_Mock_Invocation(methodName, parameters));
         } else if (mockStatus == Status.inWhen) {
             whenInvocationHolder = new loli_Mock_Invocation(methodName, parameters);
             return null;
@@ -52,6 +52,10 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
             return null;
         }
         return null;
+    }
+
+    public Object doInvocation(String methodName) {
+        return doInvocation(methodName, new List<Object>());
     }
 
 
@@ -80,6 +84,26 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         } else {
             cannedResponsesForMethod.add(newCannedResponse);
         }
+    }
+
+    /**
+     * Returns the mocked response for a mock and method call
+     * If no canned response exists for the method/method call then null is returned
+     */
+    private Object invokeCannedResponse(loli_Mock_Invocation invocation) {
+        List<loli_Mock_CannedResponse> cannedResponsesForMethod = cannedResponseByMethodName.get(invocation.methodName);
+        if (cannedResponsesForMethod == null || cannedResponsesForMethod.isEmpty()) {
+            return null;
+        }
+
+        // In case a canned response is found invoke mocked answer
+        for (loli_Mock_CannedResponse cannedResponse : cannedResponsesForMethod) {
+            if (invocation == cannedResponse.invocationToResponseTo) {
+                return cannedResponse.answer.onInvocation(invocation);
+            }
+        }
+        return null;
+
     }
 
 }
