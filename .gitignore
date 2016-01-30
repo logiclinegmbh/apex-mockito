@@ -1,0 +1,22 @@
+// Build script
+deploy.zip
+stage/*
+staticResources/deploy.zip
+src/package.xml
+buildProps/buildDev.properties
+node_modules/
+
+// OS X System files
+.DS_Store
+
+// Sublime files
+*.sublime-workspace
+*.sublime-settings
+*.sublime-project
+
+// Sass files
+.sass-cache/
+config/
+
+build/
+test/
