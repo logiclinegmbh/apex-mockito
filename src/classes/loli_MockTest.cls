@@ -15,6 +15,13 @@ public with sharing class loli_MockTest {
             return (String) super.doInvocation('mockMethodEmptyParameters');
         }
 
+        public String mockAllTypes(Integer param1, String param2, Boolean param3,
+                Decimal param4, List<String> param5, Date param6, DateTime param7, Double param8, Id param9,
+                Long param10) {
+            return (String) super.doInvocation('mockTyped', new List<Object> {param1, param2, param3, param4, param5,
+                    param6, param7, param8, param9, param10});
+        }
+
     }
 
     private class Answer implements loli_Mock_IAnswer {
@@ -327,6 +334,51 @@ public with sharing class loli_MockTest {
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(1);
         testMock.verifyNever().that(testMock.mockMethod(-1, -1));
+    }
+
+    //----------------------------- Any ----------------------------------//
+
+    //---- Happy path ----//
+
+    private static TestMethod void anyTest_AllValues() {
+        String answerExpected = 'works';
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockAllTypes(testMock.anyInteger(), testMock.anyString(),
+                testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
+                testMock.anyDouble(), testMock.anyId(), testMock.anyLong())).
+                thenReturn(answerExpected);
+
+        String answer = testMock.mockAllTypes(10, 'test', true, 10.0, new List<String> {'hello', 'world'},
+                Date.today(), DateTime.now(), 10, '01p58000001Or8d', 10l);
+        System.assertEquals(answerExpected, answer);
+        testMock.verify().that(testMock.mockAllTypes(testMock.anyInteger(), testMock.anyString(),
+                testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
+                testMock.anyDouble(), testMock.anyId(), testMock.anyLong())).called(1);
+
+    }
+
+    private static TestMethod void anyTest_ValueHolder() {
+        String answerExpected = 'works';
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethod(testMock.anyInteger(), testMock.valueInAny(16))).thenReturn(answerExpected);
+
+        String answer = testMock.mockMethod(25, 16);
+        System.assertEquals(answerExpected, answer);
+        testMock.verify().that(testMock.mockMethod(testMock.valueInAny(25), testMock.anyInteger())).called(1);
+        testMock.verifyNever().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString()));
+    }
+
+    private static TestMethod void anyTest_NotMatching() {
+        String answerExpected = 'works';
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethod(testMock.anyInteger(), testMock.anyInteger())).thenReturn(answerExpected);
+
+        String answer = testMock.mockMethod(16, 25);
+        System.assertEquals(answerExpected, answer);
+        testMock.verifyNever().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString()));
     }
 
     //----------------------------- roundTrip ----------------------------------//

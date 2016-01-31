@@ -3,14 +3,23 @@
  */
 public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
+
+    /**
+     * Status values of mock
+     */
     private enum Status {
         inWhen, inExecution, inVerify, inVerifyNever
     }
+
 
     // Current mock status --> used to determine how to handle mock invocations
     private Status mockStatus = Status.inExecution;
     // Holds an invocation in case of when/verify
     private loli_Mock_Invocation invocationHolder;
+
+    private List<loli_Mock_IMatcher> matchers = new List<loli_Mock_IMatcher>();
+
+
 
     // Canned responses for each method
     private Map<String, List<loli_Mock_CannedResponse>> cannedResponseByMethodName = new Map<String, List<loli_Mock_CannedResponse>>();
@@ -51,13 +60,14 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     }
 
     public loli_Mock_Expectation invocation(Object fromInvocation) {
-        loli_Mock_Expectation expectation = new loli_Mock_Expectation(this, invocationHolder);
+        loli_Mock_Invocation invocation = makeInvocation(invocationHolder);
+        loli_Mock_Expectation expectation = new loli_Mock_Expectation(this, invocation);
         resetMockToDefault();
         return expectation;
     }
 
     public loli_Mock_Verification that(Object fromInvocation) {
-        loli_Mock_Invocation invocation = invocationHolder;
+        loli_Mock_Invocation invocation = makeInvocation(invocationHolder);
         loli_Mock_Verification verification;
         if (mockStatus == Status.inVerify) {
             verification = makeVerify(invocation);
@@ -150,6 +160,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      */
     private void resetMockToDefault() {
         invocationHolder = null;
+        matchers = new List<loli_Mock_IMatcher>();
         mockStatus = Status.inExecution;
     }
 
@@ -190,6 +201,85 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
                 System.assert(false);
             }
         }
+    }
+
+    /**
+     * Creates the invocation for when/verify
+     * In case matchers are used these are set as parameters for the invocation, otherwise the real values
+     */
+    private loli_Mock_Invocation makeInvocation(loli_Mock_Invocation invocation) {
+        if (matchers.isEmpty()) {
+            return invocation;
+        } else {
+            if (matchers.size() != invocationHolder.parameters.size()) {
+                System.assert(false, 'You have to use any for all values');
+            }
+
+            return new loli_Mock_Invocation(invocation.methodName, matchers);
+        }
+    }
+
+    //----------------------------- Any ----------------------------------//
+
+    public String anyString() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyStringMatcher());
+        return null;
+    }
+
+    public Integer anyInteger() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyIntegerMatcher());
+        return null;
+    }
+
+    public Boolean anyBoolean() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyBooleanMatcher());
+        return null;
+    }
+
+    public Date anyDate() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyDateMatcher());
+        return null;
+    }
+
+    public DateTime anyDateTime() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyDateTimeMatcher());
+        return null;
+    }
+
+    public Decimal anyDecimal() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyDecimalMatcher());
+        return null;
+    }
+
+    public Double anyDouble() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyDoubleMatcher());
+        return null;
+    }
+
+    public Id anyId() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyIdMatcher());
+        return null;
+    }
+
+    public Long anyLong() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyLongMatcher());
+        return null;
+    }
+
+    public Time anyTime() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyTimeMatcher());
+        return null;
+    }
+
+    public Iterable<Object> anyIterable() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyIterableMatcher());
+        return null;
+    }
+
+
+    public Object valueInAny(Object valueHolder) {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyValueMatcher(valueHolder));
+        return null;
     }
 
 }
