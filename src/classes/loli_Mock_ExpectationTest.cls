@@ -15,9 +15,9 @@ public with sharing class loli_Mock_ExpectationTest {
             this.validator = validator;
         }
 
-        public void addCannedResponse(loli_Mock_CannedResponse newCannedResponse) {
+        public void addCannedResponse(loli_Mock_Invocation invocation, loli_Mock_IAnswer answer) {
             isAddCannedResponseCalled = true;
-            validator.validateAddCannedResponse(newCannedResponse);
+            validator.validateAddCannedResponse(new loli_Mock_CannedResponse(invocation, answer), invocation);
         }
 
         public loli_Mock_Expectation invocation(Object fromInvocation) {
@@ -44,30 +44,33 @@ public with sharing class loli_Mock_ExpectationTest {
 
     private class MockValidator {
 
+        private loli_Mock_Invocation invocationExpected;
         private loli_Mock_CannedResponse cannedResponseExpected;
         private Boolean isException = false;
 
-        public MockValidator(loli_Mock_CannedResponse cannedResponseExpected) {
+        public MockValidator(loli_Mock_CannedResponse cannedResponseExpected, loli_Mock_Invocation invocationExpected) {
             this.cannedResponseExpected = cannedResponseExpected;
+            this.invocationExpected = invocationExpected;
         }
 
-        public MockValidator(loli_Mock_CannedResponse cannedResponseExpected, Boolean isException) {
-            this(cannedResponseExpected);
+        public MockValidator(loli_Mock_CannedResponse cannedResponseExpected, loli_Mock_Invocation invocationExpected,
+                Boolean isException) {
+            this(cannedResponseExpected, invocationExpected);
             this.isException = isException;
         }
 
-        public void validateAddCannedResponse(loli_Mock_CannedResponse newCannedResponse) {
-            System.assert(newCannedResponse != null);
-            System.assertEquals(cannedResponseExpected, newCannedResponse);
+        public void validateAddCannedResponse(loli_Mock_CannedResponse newCannedResponse, loli_Mock_Invocation invocation) {
+            System.assert(invocation != null);
+            System.assertEquals(invocationExpected, invocation);
 
             if (!isException) {
                 Object answerExpected = cannedResponseExpected.answer.onInvocation
-                        (cannedResponseExpected.invocationToResponseTo);
-                Object answerReceived = newCannedResponse.answer.onInvocation(newCannedResponse.invocationToResponseTo);
+                        (invocation);
+                Object answerReceived = newCannedResponse.answer.onInvocation(invocation);
                 System.assertEquals(answerExpected, answerReceived);
             } else {
                 try {
-                    newCannedResponse.answer.onInvocation(newCannedResponse.invocationToResponseTo);
+                    newCannedResponse.answer.onInvocation(invocation);
                     System.assert(false);
                 } catch (TestException e) {
                     System.assert(true);
@@ -123,16 +126,15 @@ public with sharing class loli_Mock_ExpectationTest {
         String answer = 'hello World';
         String methodName = 'testMethod';
         List<Object> params = new List<Object> {12, 16};
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, params);
-        AnswerValidator answerValidator = new AnswerValidator(invocation);
+        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+        AnswerValidator answerValidator = new AnswerValidator(invocationExpected);
         loli_Mock_IAnswer invocationAnswer = new Answer(answerValidator, answer);
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocation.methodName,
-                invocation, invocationAnswer);
+        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocationExpected, invocationAnswer);
 
-        MockValidator mockValidator = new MockValidator(cannedResponseExpected);
+        MockValidator mockValidator = new MockValidator(cannedResponseExpected, invocationExpected);
         loli_IMock testMock = new Mock(mockValidator);
 
-        loli_Mock_Expectation expectation = new loli_Mock_Expectation(testMock, invocation);
+        loli_Mock_Expectation expectation = new loli_Mock_Expectation(testMock, invocationExpected);
         expectation.thenReturn(answer);
 
         System.assert(isAddCannedResponseCalled);
@@ -142,16 +144,15 @@ public with sharing class loli_Mock_ExpectationTest {
         Exception answer = new TestException();
         String methodName = 'testMethod';
         List<Object> params = new List<Object> {12, 16};
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, params);
-        AnswerValidator answerValidator = new AnswerValidator(invocation);
+        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+        AnswerValidator answerValidator = new AnswerValidator(invocationExpected);
         loli_Mock_IAnswer invocationAnswer = new Answer(answerValidator, answer);
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocation.methodName,
-                invocation, invocationAnswer);
+        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocationExpected, invocationAnswer);
 
-        MockValidator mockValidator = new MockValidator(cannedResponseExpected, true);
+        MockValidator mockValidator = new MockValidator(cannedResponseExpected, invocationExpected, true);
         loli_IMock testMock = new Mock(mockValidator);
 
-        loli_Mock_Expectation expectation = new loli_Mock_Expectation(testMock, invocation);
+        loli_Mock_Expectation expectation = new loli_Mock_Expectation(testMock, invocationExpected);
         expectation.thenReturn(answer);
 
         System.assert(isAddCannedResponseCalled);
@@ -165,16 +166,15 @@ public with sharing class loli_Mock_ExpectationTest {
         String answer = 'hello World';
         String methodName = 'testMethod';
         List<Object> params = new List<Object> {12, 16};
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, params);
-        AnswerValidator answerValidator = new AnswerValidator(invocation);
+        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+        AnswerValidator answerValidator = new AnswerValidator(invocationExpected);
         loli_Mock_IAnswer invocationAnswer = new Answer(answerValidator, answer);
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocation.methodName,
-                invocation, invocationAnswer);
+        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocationExpected, invocationAnswer);
 
-        MockValidator mockValidator = new MockValidator(cannedResponseExpected);
+        MockValidator mockValidator = new MockValidator(cannedResponseExpected, invocationExpected);
         loli_IMock testMock = new Mock(mockValidator);
 
-        loli_Mock_Expectation expectation = new loli_Mock_Expectation(testMock, invocation);
+        loli_Mock_Expectation expectation = new loli_Mock_Expectation(testMock, invocationExpected);
         expectation.thenAnswer(invocationAnswer);
 
         System.assert(isAddCannedResponseCalled);
