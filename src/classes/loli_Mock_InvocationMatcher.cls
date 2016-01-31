@@ -18,12 +18,28 @@ public with sharing class loli_Mock_InvocationMatcher {
             return false;
         }
 
-        for (Integer parameterIndex = 0; parameterIndex < invocationToMatch.parameters.size(); parameterIndex++) {
-            Object parameterExpected = invocationToMatch.parameters.get(parameterIndex);
-            Object parameterReceived = invocation.parameters.get(parameterIndex);
-            if (!isParameterMatching(parameterExpected, parameterReceived)) {
+        return areParametersMatching(invocationToMatch, invocation);
+    }
+
+    /**
+     * Checks if parameters are matching
+     */
+    private Boolean areParametersMatching(loli_Mock_Invocation invocationExpected, loli_Mock_Invocation invocation) {
+        if (invocationExpected.parameters != null) {
+            if (invocation == null || invocationExpected.parameters.size() != invocation.parameters.size()) {
                 return false;
             }
+
+            for (Integer parameterIndex = 0; parameterIndex < invocationExpected.parameters.size(); parameterIndex++) {
+                Object parameterExpected = invocationExpected.parameters.get(parameterIndex);
+                Object parameterReceived = invocation.parameters.get(parameterIndex);
+                if (!isParameterMatching(parameterExpected, parameterReceived)) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (invocation.parameters  != null) {
+            return false;
         }
         return true;
     }
@@ -39,7 +55,12 @@ public with sharing class loli_Mock_InvocationMatcher {
      * Checks if parameter of invocation is matching
      */
     private static Boolean isParameterMatching(Object parameterExpected, Object parameterReceived) {
-        return parameterExpected == parameterReceived;
+        // In case it is a matcher, call matcher method, otherwise test for equality
+        if (parameterExpected instanceof loli_Mock_IMatcher) {
+            return ((loli_Mock_IMatcher) parameterExpected).matches(parameterReceived);
+        } else {
+            return parameterExpected == parameterReceived;
+        }
     }
 
 }
