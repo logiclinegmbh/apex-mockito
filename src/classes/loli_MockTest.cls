@@ -37,74 +37,71 @@ public with sharing class loli_MockTest {
 
     public static TestMethod void addCannedResponse_Single() {
         String methodName = 'mockMethod';
+        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
         loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocation.methodName, invocation, new Answer());
 
         Mock testMock = new Mock();
-        testMock.addCannedResponse(cannedResponseExpected);
+        testMock.addCannedResponse(invocation, cannedResponseAnswer);
 
         List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(1, cannedResponseList.size());
-        System.assertEquals(cannedResponseExpected, cannedResponseList.get(0));
+        System.assert(cannedResponseList.get(0).invocationMatcher.matches(invocation));
     }
 
 
     public static TestMethod void addCannedResponse_Multiple() {
         String methodName = 'mockMethod';
+        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
         loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
         loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 16});
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocation.methodName, invocation, new Answer());
-        loli_Mock_CannedResponse otherCannedResponse = new loli_Mock_CannedResponse(invocation.methodName, otherInvocation, new Answer());
 
         Mock testMock = new Mock();
-        testMock.addCannedResponse(cannedResponseExpected);
-        testMock.addCannedResponse(otherCannedResponse);
+        testMock.addCannedResponse(invocation, cannedResponseAnswer);
+        testMock.addCannedResponse(otherInvocation, cannedResponseAnswer);
 
         List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(2, cannedResponseList.size());
-        System.assertEquals(cannedResponseExpected, cannedResponseList.get(0));
-        System.assertEquals(otherCannedResponse, cannedResponseList.get(1));
+        System.assert(cannedResponseList.get(0).invocationMatcher.matches(invocation));
+        System.assert(cannedResponseList.get(1).invocationMatcher.matches(otherInvocation));
     }
 
     public static TestMethod void addCannedResponse_Multiple_SameParameters() {
         String methodName = 'mockMethod';
+        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
         loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
         loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocation.methodName, invocation, new Answer());
-        loli_Mock_CannedResponse otherCannedResponse = new loli_Mock_CannedResponse(invocation.methodName, otherInvocation, new Answer());
 
         Mock testMock = new Mock();
-        testMock.addCannedResponse(otherCannedResponse);
-        testMock.addCannedResponse(cannedResponseExpected);
+        testMock.addCannedResponse(invocation, cannedResponseAnswer);
+        testMock.addCannedResponse(otherInvocation, cannedResponseAnswer);
 
         List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(1, cannedResponseList.size());
-        System.assertEquals(cannedResponseExpected, cannedResponseList.get(0));
+        System.assert(cannedResponseList.get(0).invocationMatcher.matches(invocation));
     }
 
     public static TestMethod void addCannedResponse_Multiple_DifferentMethod() {
         String methodName = 'mockMethod';
         String otherMethodName = 'otherMethod';
+        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
         loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
         loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(otherMethodName, new List<Object> {16, 20});
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocation.methodName, invocation, new Answer());
-        loli_Mock_CannedResponse cannedResponseOther = new loli_Mock_CannedResponse(otherInvocation.methodName, otherInvocation, new Answer());
 
         Mock testMock = new Mock();
-        testMock.addCannedResponse(cannedResponseExpected);
-        testMock.addCannedResponse(cannedResponseOther);
+        testMock.addCannedResponse(invocation, cannedResponseAnswer);
+        testMock.addCannedResponse(otherInvocation, cannedResponseAnswer);
 
         List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(1, cannedResponseList.size());
-        System.assertEquals(cannedResponseExpected, cannedResponseList.get(0));
+        System.assert(cannedResponseList.get(0).invocationMatcher.matches(invocation));
     }
 
 
@@ -117,8 +114,6 @@ public with sharing class loli_MockTest {
         String answer = 'hello World';
         List<Object> params = new List<Object> {10, 12};
         loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocationExpected.methodName,
-                invocationExpected, new Answer(answer));
 
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenReturn(answer);
@@ -127,15 +122,13 @@ public with sharing class loli_MockTest {
 
         System.assert(cannedResponses != null);
         System.assertEquals(1, cannedResponses.size());
-        System.assertEquals(cannedResponseExpected, cannedResponses.get(0));
+        System.assert(cannedResponses.get(0).invocationMatcher.matches(invocationExpected));
     }
 
     public static TestMethod void when_Single_MethodWithNoParameters() {
         String methodName = 'mockMethodEmptyParameters';
         String answer = 'hello World';
         loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName);
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocationExpected.methodName,
-                invocationExpected, new Answer(answer));
 
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethodEmptyParameters()).thenReturn(answer);
@@ -144,7 +137,7 @@ public with sharing class loli_MockTest {
 
         System.assert(cannedResponses != null);
         System.assertEquals(1, cannedResponses.size());
-        System.assertEquals(cannedResponseExpected, cannedResponses.get(0));
+        System.assert(cannedResponses.get(0).invocationMatcher.matches(invocationExpected));
     }
 
     public static TestMethod void when_Multiple() {
@@ -154,10 +147,6 @@ public with sharing class loli_MockTest {
         List<Object> otherParams = new List<Object> {16, 18};
         loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
         loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(methodName, otherParams);
-        loli_Mock_CannedResponse cannedResponseExpected = new loli_Mock_CannedResponse(invocationExpected.methodName,
-                invocationExpected, new Answer(answer));
-        loli_Mock_CannedResponse otherCannedResponse = new loli_Mock_CannedResponse(otherInvocation.methodName,
-                otherInvocation, new Answer(answer));
 
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenReturn(answer);
@@ -167,8 +156,8 @@ public with sharing class loli_MockTest {
 
         System.assert(cannedResponses != null);
         System.assertEquals(2, cannedResponses.size());
-        System.assertEquals(cannedResponseExpected, cannedResponses.get(0));
-        System.assertEquals(otherCannedResponse, cannedResponses.get(1));
+        System.assert(cannedResponses.get(0).invocationMatcher.matches(invocationExpected));
+        System.assert(cannedResponses.get(1).invocationMatcher.matches(otherInvocation));
     }
 
 

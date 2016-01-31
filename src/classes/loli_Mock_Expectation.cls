@@ -30,12 +30,11 @@ public with sharing class loli_Mock_Expectation {
     }
 
     public void thenReturn(Object answer) {
-        mock.addCannedResponse(new loli_Mock_CannedResponse(invocation.methodName, invocation,
-                new ThenReturnAnswer(answer)));
+        mock.addCannedResponse(invocation, new ThenReturnAnswer(answer));
     }
 
     public void thenAnswer(loli_Mock_IAnswer answer) {
-        mock.addCannedResponse(new loli_Mock_CannedResponse(invocation.methodName, invocation, answer));
+        mock.addCannedResponse(invocation, answer);
     }
 
 }

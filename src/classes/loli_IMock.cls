@@ -6,7 +6,7 @@ public interface loli_IMock {
     /**
      * Adds a canned response to the mock
      */
-    void addCannedResponse(loli_Mock_CannedResponse newCannedResponse);
+    void addCannedResponse(loli_Mock_Invocation invocation, loli_Mock_IAnswer answer);
 
     /**
      * Returns mocked responses for a method

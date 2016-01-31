@@ -14,16 +14,17 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     private Map<String, List<loli_Mock_CannedResponse>> cannedResponseByMethodName = new Map<String, List<loli_Mock_CannedResponse>>();
     private Map<String, List<loli_Mock_Invocation>> invocationsByMethodName = new Map<String, List<loli_Mock_Invocation>>();
 
-    public void addCannedResponse(loli_Mock_CannedResponse newCannedResponse) {
-        List<loli_Mock_CannedResponse> cannedResponseList = cannedResponseByMethodName.get(newCannedResponse.invocationToResponseTo.methodName);
+    public void addCannedResponse(loli_Mock_Invocation invocation, loli_Mock_IAnswer answer) {
+        loli_Mock_CannedResponse newCannedResponse = new loli_Mock_CannedResponse(invocation, answer);
+        List<loli_Mock_CannedResponse> cannedResponseList = cannedResponseByMethodName.get(invocation.methodName);
 
         // In case canned responses do not yet exist for method add method and new canned response
         if (cannedResponseList == null) {
             cannedResponseList = new List<loli_Mock_CannedResponse>();
-            cannedResponseByMethodName.put(newCannedResponse.invocationToResponseTo.methodName, cannedResponseList);
+            cannedResponseByMethodName.put(invocation.methodName, cannedResponseList);
             cannedResponseList.add(newCannedResponse);
         } else {
-            addCannedResponseForMethod(newCannedResponse, cannedResponseList);
+            addCannedResponseForMethod(invocation, newCannedResponse, cannedResponseList);
         }
     }
 
@@ -73,7 +74,8 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      * Adds a new canned response for a method to existing list of canned responses
      * In case a canned method with the same paramters already exists is is overwritten
      */
-    private void addCannedResponseForMethod(loli_Mock_CannedResponse newCannedResponse, List<loli_Mock_CannedResponse> cannedResponsesForMethod) {
+    private void addCannedResponseForMethod(loli_Mock_Invocation invocation, loli_Mock_CannedResponse newCannedResponse,
+            List<loli_Mock_CannedResponse> cannedResponsesForMethod) {
         Boolean isCannedResponseAlreadyExisiting = false;
         Integer cannedResponseIndex = 0;
         Integer cannedResponseExistingIndex;
@@ -81,7 +83,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         // Search for identical canned response
         while (!isCannedResponseAlreadyExisiting && cannedResponseIndex < cannedResponsesForMethod.size()) {
             loli_Mock_CannedResponse cannedResponseExisting = cannedResponsesForMethod.get(cannedResponseIndex);
-            if (cannedResponseExisting.invocationToResponseTo == newCannedResponse.invocationToResponseTo) {
+            if (cannedResponseExisting.invocationMatcher.matches(invocation)) {
                 isCannedResponseAlreadyExisiting = true;
                 cannedResponseExistingIndex = cannedResponseIndex;
             }
@@ -108,7 +110,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
         // In case a canned response is found invoke mocked answer
         for (loli_Mock_CannedResponse cannedResponse : cannedResponsesForMethod) {
-            if (invocation == cannedResponse.invocationToResponseTo) {
+            if (cannedResponse.invocationMatcher.matches(invocation)) {
                 return cannedResponse.answer.onInvocation(invocation);
             }
         }
