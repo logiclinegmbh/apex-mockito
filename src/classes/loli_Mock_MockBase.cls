@@ -9,9 +9,10 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
 
     private Status mockStatus = Status.inExecution;
-    private loli_Mock_Invocation whenInvocationHolder;
+    private loli_Mock_Invocation invocationHolder;
 
     private Map<String, List<loli_Mock_CannedResponse>> cannedResponseByMethodName = new Map<String, List<loli_Mock_CannedResponse>>();
+    private Map<String, List<loli_Mock_Invocation>> invocationsByMethodName = new Map<String, List<loli_Mock_Invocation>>();
 
     public void addCannedResponse(loli_Mock_CannedResponse newCannedResponse) {
         List<loli_Mock_CannedResponse> cannedResponseList = cannedResponseByMethodName.get(newCannedResponse.invocationToResponseTo.methodName);
@@ -35,18 +36,27 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return this;
     }
 
+    public loli_IMock verify() {
+        mockStatus = Status.inVerify;
+        return this;
+    }
+
     public loli_Mock_Expectation invocation(Object fromInvocation) {
-        loli_Mock_Expectation expectation = new loli_Mock_Expectation(this, whenInvocationHolder);
-        whenInvocationHolder = null;
+        loli_Mock_Expectation expectation = new loli_Mock_Expectation(this, invocationHolder);
+        invocationHolder = null;
         mockStatus = Status.inExecution;
         return expectation;
+    }
+
+    public loli_Mock_Verification that(Object fromInvocation) {
+        return null;
     }
 
     public Object doInvocation(String methodName, List<Object> parameters) {
         if (mockStatus == Status.inExecution) {
             return invokeCannedResponse(new loli_Mock_Invocation(methodName, parameters));
         } else if (mockStatus == Status.inWhen) {
-            whenInvocationHolder = new loli_Mock_Invocation(methodName, parameters);
+            invocationHolder = new loli_Mock_Invocation(methodName, parameters);
             return null;
         } else if (mockStatus == Status.inVerify) {
             return null;
@@ -104,6 +114,10 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         }
         return null;
 
+    }
+
+    private void recordInvocation(loli_Mock_Invocation invocation) {
+           
     }
 
 }
