@@ -7,11 +7,14 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         inWhen, inExecution, inVerify
     }
 
-
+    // Current mock status --> used to determine how to handle mock invocations
     private Status mockStatus = Status.inExecution;
+    // Holds an invocation in case of when/verify
     private loli_Mock_Invocation invocationHolder;
 
+    // Canned responses for each method
     private Map<String, List<loli_Mock_CannedResponse>> cannedResponseByMethodName = new Map<String, List<loli_Mock_CannedResponse>>();
+    // Recorded responses for each method
     private Map<String, List<loli_Mock_Invocation>> invocationsByMethodName = new Map<String, List<loli_Mock_Invocation>>();
 
     public void addCannedResponse(loli_Mock_Invocation invocation, loli_Mock_IAnswer answer) {
@@ -44,22 +47,41 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
     public loli_Mock_Expectation invocation(Object fromInvocation) {
         loli_Mock_Expectation expectation = new loli_Mock_Expectation(this, invocationHolder);
-        invocationHolder = null;
-        mockStatus = Status.inExecution;
+        resetMockToDefault();
         return expectation;
     }
 
     public loli_Mock_Verification that(Object fromInvocation) {
-        return null;
+        loli_Mock_Invocation invocation = invocationHolder;
+        resetMockToDefault();
+
+        // Check if there exists an invocations --> return verifications with empty verification list in case not
+        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
+        if (invocationsForMethod == null || invocationsForMethod.isEmpty()) {
+            return new loli_Mock_Verification(invocation.methodName);
+        }
+
+        // Gather matching invocations
+        List<loli_Mock_Invocation> invocationsMatching = new List<loli_Mock_Invocation>();
+        loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
+        for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
+            if (matcher.matches(invocationRecorded)) {
+                invocationsMatching.add(invocationRecorded);
+            }
+        }
+        return new loli_Mock_Verification(invocation.methodName, invocationsMatching);
     }
 
     public Object doInvocation(String methodName, List<Object> parameters) {
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, parameters);
         if (mockStatus == Status.inExecution) {
-            return invokeCannedResponse(new loli_Mock_Invocation(methodName, parameters));
+            recordInvocation(invocation);
+            return invokeCannedResponse(invocation);
         } else if (mockStatus == Status.inWhen) {
-            invocationHolder = new loli_Mock_Invocation(methodName, parameters);
+            invocationHolder = invocation;
             return null;
         } else if (mockStatus == Status.inVerify) {
+            invocationHolder = invocation;
             return null;
         }
         return null;
@@ -118,8 +140,24 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
     }
 
+    /**
+     * Records an invocation that happened on the mock
+     */
     private void recordInvocation(loli_Mock_Invocation invocation) {
-           
+        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
+        if (invocationsForMethod == null) {
+            invocationsForMethod = new List<loli_Mock_Invocation>();
+            invocationsByMethodName.put(invocation.methodName, invocationsForMethod);
+        }
+        invocationsForMethod.add(invocation);
+    }
+
+    /**
+     * Resets to mock to its default status
+     */
+    private void resetMockToDefault() {
+        invocationHolder = null;
+        mockStatus = Status.inExecution;
     }
 
 }

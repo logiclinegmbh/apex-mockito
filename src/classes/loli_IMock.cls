@@ -14,7 +14,7 @@ public interface loli_IMock {
     List<loli_Mock_CannedResponse> getResponses(String methodName);
 
     /**
-     * Hanles an invocation
+     * Handles when() invocation
      */
     loli_Mock_Expectation invocation(Object fromInvocation);
 
@@ -22,6 +22,16 @@ public interface loli_IMock {
      * Starts mocking
      */
     loli_IMock when();
+
+    /**
+     * Starts verification
+     */
+    loli_IMock verify();
+
+    /**
+     * Handles verify() invocation
+     */
+    loli_Mock_Verification that(Object fromInvocation);
 
     /**
      * Invocation handler for calls to mock methods

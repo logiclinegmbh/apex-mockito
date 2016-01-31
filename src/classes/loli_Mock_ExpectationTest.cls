@@ -40,6 +40,16 @@ public with sharing class loli_Mock_ExpectationTest {
             return null;
         }
 
+
+        public loli_IMock verify() {
+            return null;
+        }
+
+
+        public loli_Mock_Verification that(Object fromInvocation) {
+            return null;
+        }
+
     }
 
     private class MockValidator {
