@@ -2,7 +2,7 @@
  * Invocation matcher
  */
 
-public with sharing class loli_Mock_InvocationMatcher {
+public with sharing class loli_Mock_InvocationMatcher implements loli_Mock_IMatcher {
 
     loli_Mock_Invocation invocationToMatch;
 
@@ -13,7 +13,12 @@ public with sharing class loli_Mock_InvocationMatcher {
     /**
      * Checks if invocation matches with expected invocation
      */
-    public Boolean matches(loli_Mock_Invocation invocation) {
+    public Boolean matches(Object compare) {
+        if (!(compare instanceof loli_Mock_Invocation)) {
+            return false;
+        }
+
+        loli_Mock_Invocation invocation = (loli_Mock_Invocation) compare;
         if (!isMethodMatching(invocationToMatch.methodName, invocation.methodName)) {
             return false;
         }
