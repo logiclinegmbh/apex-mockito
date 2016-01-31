@@ -4,7 +4,7 @@
 public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
     private enum Status {
-        inWhen, inExecution, inVerify
+        inWhen, inExecution, inVerify, inVerifyNever
     }
 
     // Current mock status --> used to determine how to handle mock invocations
@@ -45,6 +45,11 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return this;
     }
 
+    public loli_IMock verifyNever() {
+        mockStatus = Status.inVerifyNever;
+        return this;
+    }
+
     public loli_Mock_Expectation invocation(Object fromInvocation) {
         loli_Mock_Expectation expectation = new loli_Mock_Expectation(this, invocationHolder);
         resetMockToDefault();
@@ -53,23 +58,14 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
     public loli_Mock_Verification that(Object fromInvocation) {
         loli_Mock_Invocation invocation = invocationHolder;
+        loli_Mock_Verification verification;
+        if (mockStatus == Status.inVerify) {
+            verification = makeVerify(invocation);
+        } else if (mockStatus == Status.inVerifyNever) {
+            makeVerifyNever(invocation);
+        }
         resetMockToDefault();
-
-        // Check if there exists an invocations --> return verifications with empty verification list in case not
-        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
-        if (invocationsForMethod == null || invocationsForMethod.isEmpty()) {
-            return new loli_Mock_Verification(invocation.methodName);
-        }
-
-        // Gather matching invocations
-        List<loli_Mock_Invocation> invocationsMatching = new List<loli_Mock_Invocation>();
-        loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
-        for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
-            if (matcher.matches(invocationRecorded)) {
-                invocationsMatching.add(invocationRecorded);
-            }
-        }
-        return new loli_Mock_Verification(invocation.methodName, invocationsMatching);
+        return verification;
     }
 
     public Object doInvocation(String methodName, List<Object> parameters) {
@@ -77,10 +73,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         if (mockStatus == Status.inExecution) {
             recordInvocation(invocation);
             return invokeCannedResponse(invocation);
-        } else if (mockStatus == Status.inWhen) {
-            invocationHolder = invocation;
-            return null;
-        } else if (mockStatus == Status.inVerify) {
+        } else if (mockStatus == Status.inWhen || mockStatus == Status.inVerify || mockStatus == Status.inVerifyNever) {
             invocationHolder = invocation;
             return null;
         }
@@ -158,6 +151,45 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     private void resetMockToDefault() {
         invocationHolder = null;
         mockStatus = Status.inExecution;
+    }
+
+    /**
+     * Performs verify
+     */
+    private loli_Mock_Verification makeVerify(loli_Mock_Invocation invocation) {
+        // Check if there exists an invocations --> return verifications with empty verification list in case not
+        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
+        if (invocationsForMethod == null || invocationsForMethod.isEmpty()) {
+            return new loli_Mock_Verification(invocation.methodName);
+        }
+
+        // Gather matching invocations
+        List<loli_Mock_Invocation> invocationsMatching = new List<loli_Mock_Invocation>();
+        loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
+        for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
+            if (matcher.matches(invocationRecorded)) {
+                invocationsMatching.add(invocationRecorded);
+            }
+        }
+        return new loli_Mock_Verification(invocation.methodName, invocationsMatching);
+    }
+
+    /**
+     * Performs verifyNever
+     */
+    private void makeVerifyNever(loli_Mock_Invocation invocation) {
+        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
+        if (invocationsForMethod == null || invocationsForMethod.isEmpty()) {
+            System.assert(true);
+        }
+
+        // Check that no matching invocation happended
+        loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
+        for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
+            if (matcher.matches(invocationRecorded)) {
+                System.assert(false);
+            }
+        }
     }
 
 }

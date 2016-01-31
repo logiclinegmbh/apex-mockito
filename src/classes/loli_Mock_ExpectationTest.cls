@@ -50,6 +50,11 @@ public with sharing class loli_Mock_ExpectationTest {
             return null;
         }
 
+
+        public loli_IMock verifyNever() {
+            return null;
+        }
+
     }
 
     private class MockValidator {

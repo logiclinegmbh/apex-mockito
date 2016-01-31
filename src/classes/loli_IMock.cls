@@ -29,6 +29,11 @@ public interface loli_IMock {
     loli_IMock verify();
 
     /**
+     * Starts never verification
+     */
+    loli_IMock verifyNever();
+
+    /**
      * Handles verify() invocation
      */
     loli_Mock_Verification that(Object fromInvocation);

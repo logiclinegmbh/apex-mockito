@@ -315,6 +315,20 @@ public with sharing class loli_MockTest {
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(2);
     }
 
+    //----------------------------- verifyNever ----------------------------------//
+
+    //---- Happy path ----//
+
+    private static TestMethod void verifyNever() {
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+        testMock.mockMethod(params.get(0), params.get(1));
+
+        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(1);
+        testMock.verifyNever().that(testMock.mockMethod(-1, -1));
+    }
+
     //----------------------------- roundTrip ----------------------------------//
 
     //---- Happy path ----//
@@ -352,6 +366,7 @@ public with sharing class loli_MockTest {
         testMock.verify().that(testMock.mockMethod(exceptionParameters.get(0), exceptionParameters.get(1))).called(1);
         testMock.verify().that(testMock.mockMethodEmptyParameters()).called(1);
         System.assertEquals(0, testMock.verify().that(testMock.mockMethod(100, 200)).calledCount);
+        testMock.verifyNever().that(testMock.mockMethod(100, 200));
 
     }
 
