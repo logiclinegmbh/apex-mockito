@@ -38,11 +38,11 @@ public with sharing class loli_Mock_Verification {
         return methodName == verificationCompare.methodName && areInvocationsEqual(verificationCompare.invocations);
     }
 
-        /**
-         * Compares the number of time called with the actual invocations
-         */
+    /**
+     * Compares the number of time called with the actual invocations
+     */
     public void called(Integer count) {
-        System.assertEquals(count, calledCount);
+        System.assertEquals(count, calledCount, 'Invocations: ' + invocations);
     }
 
     private Boolean areInvocationsEqual(List<loli_Mock_Invocation> invocationsCompare) {

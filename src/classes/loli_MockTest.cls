@@ -5,7 +5,7 @@ public with sharing class loli_MockTest {
 
     private class TestException extends Exception{}
 
-    public class Mock extends loli_Mock_MockBase {
+    private class Mock extends loli_Mock_MockBase {
 
         public String mockMethod(Object param1, Object param2) {
             return (String) super.doInvocation('mockMethod', new List<Object> {param1, param2});
@@ -17,9 +17,9 @@ public with sharing class loli_MockTest {
 
         public String mockAllTypes(Integer param1, String param2, Boolean param3,
                 Decimal param4, List<String> param5, Date param6, DateTime param7, Double param8, Id param9,
-                Long param10) {
+                Long param10, String param11, Account param12) {
             return (String) super.doInvocation('mockTyped', new List<Object> {param1, param2, param3, param4, param5,
-                    param6, param7, param8, param9, param10});
+                    param6, param7, param8, param9, param10, param11, param12});
         }
 
     }
@@ -36,6 +36,20 @@ public with sharing class loli_MockTest {
 
         public Object onInvocation(loli_Mock_Invocation invocation) {
             return answer;
+        }
+
+    }
+
+    private class Matcher implements loli_Mock_IMatcher {
+
+        private Boolean isMatching = false;
+
+        public Matcher(Boolean isMatching) {
+            this.isMatching = isMatching;
+        }
+
+        public Boolean matches(Object compare) {
+            return isMatching;
         }
 
     }
@@ -170,6 +184,8 @@ public with sharing class loli_MockTest {
     }
 
 
+
+
     //----------------------------- doInvocation ----------------------------------//
 
     //---- Happy path ----//
@@ -226,6 +242,20 @@ public with sharing class loli_MockTest {
         String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
 
         System.assert(answerReturned == null);
+    }
+
+    public static TestMethod void doInvocation_thenAnswer() {
+        String answer = 'hello World';
+        Answer answerImplementation = new Answer(answer);
+        List<Object> params = new List<Object> {10, 12};
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenAnswer(answerImplementation);
+
+        String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
+
+        System.assert(answerReturned != null);
+        System.assertEquals(answer, answerReturned);
     }
 
 
@@ -346,15 +376,15 @@ public with sharing class loli_MockTest {
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockAllTypes(testMock.anyInteger(), testMock.anyString(),
                 testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
-                testMock.anyDouble(), testMock.anyId(), testMock.anyLong())).
+                testMock.anyDouble(), testMock.anyId(), testMock.anyLong(), (String) testMock.anyObject(), (Account) testMock.anySObject())).
                 thenReturn(answerExpected);
 
         String answer = testMock.mockAllTypes(10, 'test', true, 10.0, new List<String> {'hello', 'world'},
-                Date.today(), DateTime.now(), 10, '01p58000001Or8d', 10l);
+                Date.today(), DateTime.now(), 10, '01p58000001Or8d', 10l, 'objectString', new Account());
         System.assertEquals(answerExpected, answer);
         testMock.verify().that(testMock.mockAllTypes(testMock.anyInteger(), testMock.anyString(),
                 testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
-                testMock.anyDouble(), testMock.anyId(), testMock.anyLong())).called(1);
+                testMock.anyDouble(), testMock.anyId(), testMock.anyLong(), (String) testMock.anyObject(), (Account) testMock.anySObject())).called(1);
 
     }
 
@@ -362,11 +392,11 @@ public with sharing class loli_MockTest {
         String answerExpected = 'works';
 
         Mock testMock = new Mock();
-        testMock.when().invocation(testMock.mockMethod(testMock.anyInteger(), testMock.valueInAny(16))).thenReturn(answerExpected);
+        testMock.when().invocation(testMock.mockMethod(testMock.anyInteger(), testMock.anyValue(16))).thenReturn(answerExpected);
 
         String answer = testMock.mockMethod(25, 16);
         System.assertEquals(answerExpected, answer);
-        testMock.verify().that(testMock.mockMethod(testMock.valueInAny(25), testMock.anyInteger())).called(1);
+        testMock.verify().that(testMock.mockMethod(testMock.anyValue(25), testMock.anyInteger())).called(1);
         testMock.verifyNever().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString()));
     }
 
@@ -379,6 +409,38 @@ public with sharing class loli_MockTest {
         String answer = testMock.mockMethod(16, 25);
         System.assertEquals(answerExpected, answer);
         testMock.verifyNever().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString()));
+    }
+
+    //----------------------------- CustomMatcher ----------------------------------//
+
+    //---- Happy path ----//
+
+    private static TestMethod void matcher() {
+        String answerExpected = 'works';
+        loli_Mock_IMatcher testMatcher = new Matcher(true);
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethod(testMock.anyInteger(), testMock.matcher(testMatcher))).thenReturn(answerExpected);
+
+        String answer = testMock.mockMethod(10, 20);
+
+        System.assert(answer != null);
+        System.assertEquals(answerExpected, answer);
+        testMock.verify().that(testMock.mockMethod(testMock.matcher(testMatcher), testMock.matcher(testMatcher))).called(1);
+    }
+
+    private static TestMethod void matcher_NotMatching() {
+        String answerExpected = 'works';
+
+        Mock testMock = new Mock();
+        testMock.when().invocation(testMock.mockMethod(testMock.matcher(new Matcher(true)), testMock.matcher(new Matcher(false))))
+                .thenReturn(answerExpected);
+
+        String answer = testMock.mockMethod(10, 20);
+
+        System.assert(answer == null);
+        System.assertEquals(0,
+                testMock.verify().that(testMock.mockMethod(testMock.matcher(new Matcher(true)), testMock.matcher(new Matcher(false)))).calledCount);
     }
 
     //----------------------------- roundTrip ----------------------------------//

@@ -181,6 +181,21 @@ public with sharing class loli_Mock_ParameterMatcher {
     }
 
     /**
+     * Any sobject matcher
+     */
+    public class AnySObjectMatcher implements loli_Mock_IMatcher {
+
+        public Boolean matches(Object compare) {
+            if ((compare instanceof sObject)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+    }
+
+    /**
      * Any value matcher
      */
     public class AnyValueMatcher implements loli_Mock_IMatcher {

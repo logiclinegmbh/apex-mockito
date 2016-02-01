@@ -94,6 +94,11 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return doInvocation(methodName, new List<Object>());
     }
 
+    public Object matcher(loli_Mock_IMatcher customMatcher) {
+        matchers.add(customMatcher);
+        return null;
+    }
+
 
     /**
      * Adds a new canned response for a method to existing list of canned responses
@@ -276,8 +281,18 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return null;
     }
 
+    public sObject anySObject() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnySObjectMatcher());
+        return null;
+    }
 
-    public Object valueInAny(Object valueHolder) {
+    public Object anyObject() {
+        matchers.add(new loli_Mock_ParameterMatcher.AnyObjectMatcher());
+        return null;
+    }
+
+
+    public Object anyValue(Object valueHolder) {
         matchers.add(new loli_Mock_ParameterMatcher.AnyValueMatcher(valueHolder));
         return null;
     }
