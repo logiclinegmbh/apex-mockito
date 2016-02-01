@@ -366,6 +366,14 @@ public with sharing class loli_MockTest {
         testMock.verifyNever().that(testMock.mockMethod(-1, -1));
     }
 
+    private static TestMethod void verifyNever_NoInvocation() {
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+
+        testMock.verifyNever().that(testMock.mockMethod(params.get(0), params.get(1)));
+    }
+
     //----------------------------- Any ----------------------------------//
 
     //---- Happy path ----//

@@ -197,13 +197,13 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
         if (invocationsForMethod == null || invocationsForMethod.isEmpty()) {
             System.assert(true);
-        }
-
-        // Check that no matching invocation happended
-        loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
-        for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
-            if (matcher.matches(invocationRecorded)) {
-                System.assert(false);
+        } else {
+            // Check that no matching invocation happended
+            loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
+            for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
+                if (matcher.matches(invocationRecorded)) {
+                    System.assert(false);
+                }
             }
         }
     }
