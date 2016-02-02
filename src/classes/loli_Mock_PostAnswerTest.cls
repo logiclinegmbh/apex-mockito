@@ -53,6 +53,10 @@ public with sharing class loli_Mock_PostAnswerTest {
             return null;
         }
 
+        public loli_IMock answerFor(Object answer) {
+            return null;
+        }
+
     }
 
     private class MockValidator {

@@ -19,6 +19,11 @@ public interface loli_IMock {
     loli_Mock_PostAnswer invocation(Object fromInvocation);
 
     /**
+     * Handles when() in case answer provided before defining invocation
+     */
+    loli_IMock answerFor(Object answer);
+
+    /**
      * Starts mocking
      */
     loli_IMock when();
@@ -34,7 +39,7 @@ public interface loli_IMock {
     loli_Mock_Verification that(Object fromInvocation);
 
     /**
-     * Handles verification based on expectations
+     * Handles verify() in case expectation provided before defining invocation
      */
     Object expectationFor(loli_Mock_Expectation expectation);
 

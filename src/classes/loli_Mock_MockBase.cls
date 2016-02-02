@@ -8,7 +8,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      * Status values of mock
      */
     private enum Status {
-        inWhen, inExecution, inVerify, inVerifyExpectation
+        inWhen, inWhenAnswerFor, inExecution, inVerify, inVerifyExpectationFor
     }
 
 
@@ -16,8 +16,10 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     private Status mockStatus = Status.inExecution;
     // Holds an invocation in case of when/verify
     private loli_Mock_Invocation invocationHolder;
-    // Holds expectation in case of verify/that used with expectation
+    // Holds expectation in case verify/expectationFor is used
     private loli_Mock_Expectation expectationHolder;
+    // Holds answer in case when/answerFor is used
+    private loli_Mock_IAnswer answerHolder;
     // Holds matchers for invocation (if any specified)
     private List<loli_Mock_IMatcher> matchers = new List<loli_Mock_IMatcher>();
 
@@ -63,6 +65,16 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return expectation;
     }
 
+    public loli_IMock answerFor(Object answer) {
+        mockStatus = Status.inWhenAnswerFor;
+        if (!(answer instanceof loli_Mock_IAnswer)) {
+            answerHolder = new loli_Mock_Answer.ThenReturnAnswer(answer);
+        } else {
+            answerHolder = (loli_Mock_IAnswer) answer;
+        }
+        return this;
+    }
+
     public loli_Mock_Verification that(Object fromInvocation) {
         loli_Mock_Invocation invocation = makeInvocation(invocationHolder);
         loli_Mock_Verification verification;
@@ -75,7 +87,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
     public Object expectationFor(loli_Mock_Expectation expectation) {
         expectationHolder = expectation;
-        mockStatus = Status.inVerifyExpectation;
+        mockStatus = Status.inVerifyExpectationFor;
         return this;
     }
 
@@ -89,7 +101,11 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         } else if (mockStatus == Status.inWhen || mockStatus == Status.inVerify) {
             invocationHolder = invocation;
             return null;
-        } else if (mockStatus == Status.inVerifyExpectation) {
+        } else if (mockStatus == Status.inWhenAnswerFor) {
+            invocation = makeInvocation(invocation);
+            addCannedResponse(invocation, answerHolder);
+            resetMockToDefault();
+        } else if (mockStatus == Status.inVerifyExpectationFor) {
             // Verification is performed at the end of mock call chain
             // --> calling method performs verification then
             invocation = makeInvocation(invocation);
@@ -176,6 +192,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     private void resetMockToDefault() {
         invocationHolder = null;
         expectationHolder = null;
+        answerHolder = null;
         matchers = new List<loli_Mock_IMatcher>();
         mockStatus = Status.inExecution;
     }

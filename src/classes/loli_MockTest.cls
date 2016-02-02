@@ -187,6 +187,65 @@ public with sharing class loli_MockTest {
         System.assert(cannedResponses.get(1).invocationMatcher.matches(otherInvocation));
     }
 
+    //----------------------------- when/answerFor ----------------------------------//
+
+    //---- Happy path ----//
+
+    public static TestMethod void when_answerFor_Single() {
+        String methodName = 'mockMethod';
+        String answer = 'hello World';
+        List<Object> params = new List<Object> {10, 12};
+        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+
+        Mock testMock = new Mock();
+        ((Mock) testMock.when().answerFor(answer)).mockMethod(params.get(0), params.get(1));
+
+        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
+
+        System.assert(cannedResponses != null);
+        System.assertEquals(1, cannedResponses.size());
+        System.assert(cannedResponses.get(0).invocationMatcher.matches(invocationExpected));
+        System.assertEquals(answer, answerReturned);
+    }
+
+    public static TestMethod void when_answerFor_Matchers() {
+        String methodName = 'mockMethod';
+        String answer = 'hello World';
+        List<Object> params = new List<Object> {10, 12};
+        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+
+        Mock testMock = new Mock();
+        ((Mock) testMock.when().answerFor(answer)).mockMethod(testMock.anyInteger(), testMock.anyValue(params.get(1)));
+
+        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
+
+        System.assert(cannedResponses != null);
+        System.assertEquals(1, cannedResponses.size());
+        System.assert(cannedResponses.get(0).invocationMatcher.matches(invocationExpected));
+        System.assertEquals(answer, answerReturned);
+    }
+
+    public static TestMethod void when_answerFor_Single_thenAnswer() {
+        String methodName = 'mockMethod';
+        String answerString = 'hello World';
+        Answer answer = new Answer(answerString);
+        List<Object> params = new List<Object> {10, 12};
+        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+
+        Mock testMock = new Mock();
+        ((Mock) testMock.when().answerFor(answer)).mockMethod(params.get(0), params.get(1));
+        String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
+
+        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+
+        System.assert(cannedResponses != null);
+        System.assertEquals(1, cannedResponses.size());
+        System.assert(cannedResponses.get(0).invocationMatcher.matches(invocationExpected));
+        System.assertEquals(answerString, answerReturned);
+    }
+
 
 
 

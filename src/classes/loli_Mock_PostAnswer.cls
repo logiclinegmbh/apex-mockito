@@ -4,24 +4,6 @@
 
 public with sharing class loli_Mock_PostAnswer {
 
-    private class ThenReturnAnswer implements loli_Mock_IAnswer {
-
-        private Object answer;
-
-        public ThenReturnAnswer(Object answer) {
-            this.answer = answer;
-        }
-
-        public Object onInvocation(loli_Mock_Invocation invocation) {
-            if (!(answer instanceof Exception)) {
-                return answer;
-            } else {
-                throw (Exception) answer;
-            }
-        }
-
-    }
-
     private loli_IMock mock;
     private loli_Mock_Invocation invocation;
 
@@ -31,7 +13,7 @@ public with sharing class loli_Mock_PostAnswer {
     }
 
     public void thenReturn(Object answer) {
-        mock.addCannedResponse(invocation, new ThenReturnAnswer(answer));
+        mock.addCannedResponse(invocation, new loli_Mock_Answer.ThenReturnAnswer(answer));
     }
 
     public void thenAnswer(loli_Mock_IAnswer answer) {
