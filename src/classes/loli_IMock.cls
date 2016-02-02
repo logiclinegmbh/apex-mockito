@@ -16,7 +16,7 @@ public interface loli_IMock {
     /**
      * Handles when() invocation
      */
-    loli_Mock_Expectation invocation(Object fromInvocation);
+    loli_Mock_PostAnswer invocation(Object fromInvocation);
 
     /**
      * Starts mocking
@@ -37,6 +37,11 @@ public interface loli_IMock {
      * Handles verify() invocation
      */
     loli_Mock_Verification that(Object fromInvocation);
+
+    /**
+     * Handles verification based on expectations
+     */
+    Object expectationFor(loli_Mock_Expectation expectation);
 
     /**
      * Invocation handler for calls to mock methods

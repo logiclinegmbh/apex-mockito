@@ -8,7 +8,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      * Status values of mock
      */
     private enum Status {
-        inWhen, inExecution, inVerify, inVerifyNever
+        inWhen, inExecution, inVerify, inVerifyNever, inVerifyExpectation
     }
 
 
@@ -16,6 +16,8 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     private Status mockStatus = Status.inExecution;
     // Holds an invocation in case of when/verify
     private loli_Mock_Invocation invocationHolder;
+    // Holds expectation in case of verify/that used with expectation
+    private loli_Mock_Expectation expectationHolder;
 
     private List<loli_Mock_IMatcher> matchers = new List<loli_Mock_IMatcher>();
 
@@ -59,9 +61,9 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return this;
     }
 
-    public loli_Mock_Expectation invocation(Object fromInvocation) {
+    public loli_Mock_PostAnswer invocation(Object fromInvocation) {
         loli_Mock_Invocation invocation = makeInvocation(invocationHolder);
-        loli_Mock_Expectation expectation = new loli_Mock_Expectation(this, invocation);
+        loli_Mock_PostAnswer expectation = new loli_Mock_PostAnswer(this, invocation);
         resetMockToDefault();
         return expectation;
     }
@@ -78,6 +80,12 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return verification;
     }
 
+    public Object expectationFor(loli_Mock_Expectation expectation) {
+        expectationHolder = expectation;
+        mockStatus = Status.inVerifyExpectation;
+        return this;
+    }
+
     public Object doInvocation(String methodName, List<Object> parameters) {
         loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, parameters);
         if (mockStatus == Status.inExecution) {
@@ -86,6 +94,11 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         } else if (mockStatus == Status.inWhen || mockStatus == Status.inVerify || mockStatus == Status.inVerifyNever) {
             invocationHolder = invocation;
             return null;
+        } else if (mockStatus == Status.inVerifyExpectation) {
+            invocation = makeInvocation(invocation);
+            loli_Mock_Verification verification = makeVerify(invocation);
+            verification.verifyExpectation(expectationHolder);
+            resetMockToDefault();
         }
         return null;
     }
@@ -165,6 +178,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      */
     private void resetMockToDefault() {
         invocationHolder = null;
+        expectationHolder = null;
         matchers = new List<loli_Mock_IMatcher>();
         mockStatus = Status.inExecution;
     }
@@ -216,7 +230,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         if (matchers.isEmpty()) {
             return invocation;
         } else {
-            if (matchers.size() != invocationHolder.parameters.size()) {
+            if (matchers.size() != invocation.parameters.size()) {
                 System.assert(false, 'You have to use any for all values');
             }
 

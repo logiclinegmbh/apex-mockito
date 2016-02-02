@@ -54,6 +54,10 @@ public with sharing class loli_Mock_PostAnswerTest {
             return null;
         }
 
+        public Object expectationFor(loli_Mock_Expectation expectation) {
+            return null;
+        }
+
     }
 
     private class MockValidator {

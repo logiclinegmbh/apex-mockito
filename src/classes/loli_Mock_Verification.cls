@@ -5,24 +5,18 @@ public with sharing class loli_Mock_Verification {
 
     public String methodName {get; private set;}
     public List<loli_Mock_Invocation> invocations {get; private set;}
-    public Integer calledCount {
-        get {
-            if (invocations != null && !invocations.isEmpty()) {
-                return invocations.size();
-            } else {
-                return 0;
-            }
-        }
-    }
+    public Integer calledCount;
 
     public loli_Mock_Verification(String methodName) {
         invocations = new List<loli_Mock_Invocation>();
         this.methodName = methodName;
+        this.calledCount = 0;
     }
 
     public loli_Mock_Verification(String methodName, List<loli_Mock_Invocation> invocations) {
         this(methodName);
         this.invocations = invocations;
+        this.calledCount = invocations.size();
     }
 
     public void addInvokation(loli_Mock_Invocation invokationElement) {
@@ -36,6 +30,12 @@ public with sharing class loli_Mock_Verification {
 
         loli_Mock_Verification verificationCompare = (loli_Mock_Verification) compare;
         return methodName == verificationCompare.methodName && areInvocationsEqual(verificationCompare.invocations);
+    }
+
+    public void verifyExpectation(loli_Mock_Expectation expectation) {
+        if (loli_Mock_Expectation.ExpectationType.called == expectation.expectedType) {
+            called(expectation.expectedCount);
+        }
     }
 
     /**

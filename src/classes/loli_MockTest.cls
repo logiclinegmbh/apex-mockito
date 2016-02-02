@@ -22,6 +22,10 @@ public with sharing class loli_MockTest {
                     param6, param7, param8, param9, param10, param11, param12});
         }
 
+        public void mockVoidMethod(Integer param1) {
+            super.doInvocation('mockVoidMethod', new List<Object> {param1});
+        }
+
     }
 
     private class Answer implements loli_Mock_IAnswer {
@@ -352,6 +356,33 @@ public with sharing class loli_MockTest {
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(2);
     }
 
+    //----------------------------- verify/that with expectation ----------------------------------//
+
+    //---- Happy path ----//
+
+    private static TestMethod void that_Expectation() {
+        String methodName = 'mockMethod';
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+        testMock.mockMethod(params.get(0), params.get(1));
+
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(1))).mockMethod(params.get(0), params.get(1));
+    }
+
+    private static TestMethod void that_Expectation_VoidMethod() {
+        String methodName = 'mockMethod';
+        Integer param = 4;
+
+        Mock testMock = new Mock();
+        testMock.mockVoidMethod(param);
+        testMock.mockVoidMethod(param);
+
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(2))).mockVoidMethod(param);
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(2))).mockVoidMethod(testMock.anyInteger());
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(2))).mockVoidMethod((Integer) testMock.anyValue(4));
+    }
+
     //----------------------------- verifyNever ----------------------------------//
 
     //---- Happy path ----//
@@ -393,6 +424,9 @@ public with sharing class loli_MockTest {
         testMock.verify().that(testMock.mockAllTypes(testMock.anyInteger(), testMock.anyString(),
                 testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
                 testMock.anyDouble(), testMock.anyId(), testMock.anyLong(), (String) testMock.anyObject(), (Account) testMock.anySObject())).called(1);
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(1))).mockAllTypes(testMock.anyInteger(), testMock.anyString(),
+                testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
+                testMock.anyDouble(), testMock.anyId(), testMock.anyLong(), (String) testMock.anyObject(), (Account) testMock.anySObject());
 
     }
 
@@ -473,6 +507,7 @@ public with sharing class loli_MockTest {
         System.assertEquals(otherCannedResponse, response);
         response = testMock.mockMethod(otherParams.get(0), otherParams.get(1));
         System.assert(response == null);
+        testMock.mockVoidMethod((Integer) params.get(0));
 
         try {
             testMock.mockMethod(exceptionParameters.get(0), exceptionParameters.get(1));
