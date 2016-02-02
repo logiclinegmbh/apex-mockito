@@ -8,7 +8,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      * Status values of mock
      */
     private enum Status {
-        inWhen, inExecution, inVerify, inVerifyNever, inVerifyExpectation
+        inWhen, inExecution, inVerify, inVerifyExpectation
     }
 
 
@@ -18,7 +18,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     private loli_Mock_Invocation invocationHolder;
     // Holds expectation in case of verify/that used with expectation
     private loli_Mock_Expectation expectationHolder;
-
+    // Holds matchers for invocation (if any specified)
     private List<loli_Mock_IMatcher> matchers = new List<loli_Mock_IMatcher>();
 
 
@@ -56,11 +56,6 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return this;
     }
 
-    public loli_IMock verifyNever() {
-        mockStatus = Status.inVerifyNever;
-        return this;
-    }
-
     public loli_Mock_PostAnswer invocation(Object fromInvocation) {
         loli_Mock_Invocation invocation = makeInvocation(invocationHolder);
         loli_Mock_PostAnswer expectation = new loli_Mock_PostAnswer(this, invocation);
@@ -73,8 +68,6 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         loli_Mock_Verification verification;
         if (mockStatus == Status.inVerify) {
             verification = makeVerify(invocation);
-        } else if (mockStatus == Status.inVerifyNever) {
-            makeVerifyNever(invocation);
         }
         resetMockToDefault();
         return verification;
@@ -88,13 +81,17 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
 
     public Object doInvocation(String methodName, List<Object> parameters) {
         loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, parameters);
+
+        // Perform invocation based on mock state:
         if (mockStatus == Status.inExecution) {
             recordInvocation(invocation);
             return invokeCannedResponse(invocation);
-        } else if (mockStatus == Status.inWhen || mockStatus == Status.inVerify || mockStatus == Status.inVerifyNever) {
+        } else if (mockStatus == Status.inWhen || mockStatus == Status.inVerify) {
             invocationHolder = invocation;
             return null;
         } else if (mockStatus == Status.inVerifyExpectation) {
+            // Verification is performed at the end of mock call chain
+            // --> calling method performs verification then
             invocation = makeInvocation(invocation);
             loli_Mock_Verification verification = makeVerify(invocation);
             verification.verifyExpectation(expectationHolder);
@@ -202,24 +199,6 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
             }
         }
         return new loli_Mock_Verification(invocation.methodName, invocationsMatching);
-    }
-
-    /**
-     * Performs verifyNever
-     */
-    private void makeVerifyNever(loli_Mock_Invocation invocation) {
-        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
-        if (invocationsForMethod == null || invocationsForMethod.isEmpty()) {
-            System.assert(true);
-        } else {
-            // Check that no matching invocation happended
-            loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
-            for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
-                if (matcher.matches(invocationRecorded)) {
-                    System.assert(false);
-                }
-            }
-        }
     }
 
     /**

@@ -32,9 +32,18 @@ public with sharing class loli_Mock_Verification {
         return methodName == verificationCompare.methodName && areInvocationsEqual(verificationCompare.invocations);
     }
 
+    /**
+     * Verifies expectation for the verification object (the invocations that are)
+     */
     public void verifyExpectation(loli_Mock_Expectation expectation) {
         if (loli_Mock_Expectation.ExpectationType.called == expectation.expectedType) {
             called(expectation.expectedCount);
+        } else if (loli_Mock_Expectation.ExpectationType.never == expectation.expectedType) {
+            never();
+        } else if (loli_Mock_Expectation.ExpectationType.atLeast == expectation.expectedType) {
+            atLeast(expectation.expectedCount);
+        } else if (loli_Mock_Expectation.ExpectationType.atMost == expectation.expectedType) {
+            atMost(expectation.expectedCount);
         }
     }
 

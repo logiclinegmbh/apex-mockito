@@ -132,6 +132,36 @@ public with sharing class loli_Mock_VerificationTest {
         testVerification.verifyExpectation(expectation);
     }
 
+    private static TestMethod void verifyExpectation_never() {
+        loli_Mock_Expectation expectation = loli_Mock_Expectation.never();
+        String methodName = 'testMethod';
+
+        loli_Mock_Verification testVerification = new loli_Mock_Verification(methodName);
+        testVerification.verifyExpectation(expectation);
+    }
+
+    private static TestMethod void verifyExpectation_atLeast() {
+        loli_Mock_Expectation expectation = loli_Mock_Expectation.atLeast(2);
+        String methodName = 'testMethod';
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation, invocation, invocation};
+
+        loli_Mock_Verification testVerification = new loli_Mock_Verification(methodName, invocations);
+        testVerification.verifyExpectation(expectation);
+    }
+
+    private static TestMethod void verifyExpectation_atMost() {
+        loli_Mock_Expectation expectation = loli_Mock_Expectation.atMost(4);
+        String methodName = 'testMethod';
+        List<Object> invocationParameters = new List<Object> {10, 12};
+        loli_Mock_Invocation invocation = new loli_Mock_Invocation (methodName, invocationParameters);
+        List<loli_Mock_Invocation> invocations = new List<loli_Mock_Invocation > {invocation, invocation, invocation};
+
+        loli_Mock_Verification testVerification = new loli_Mock_Verification(methodName, invocations);
+        testVerification.verifyExpectation(expectation);
+    }
+
 
     //----------------------------- Equals ----------------------------------//
 

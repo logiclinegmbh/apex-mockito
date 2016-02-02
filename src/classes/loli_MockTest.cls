@@ -341,20 +341,6 @@ public with sharing class loli_MockTest {
         System.assertEquals(verficationExpected, verfication);
     }
 
-    //----------------------------- called ----------------------------------//
-
-    //---- Happy path ----//
-
-    private static TestMethod void called() {
-        List<Object> params = new List<Object> {12, 16};
-
-        Mock testMock = new Mock();
-        testMock.mockMethod(params.get(0), params.get(1));
-        testMock.mockMethod(params.get(0), params.get(1));
-
-        System.assertEquals(2, testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).calledCount);
-        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(2);
-    }
 
     //----------------------------- verify/that with expectation ----------------------------------//
 
@@ -383,6 +369,21 @@ public with sharing class loli_MockTest {
         ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(2))).mockVoidMethod((Integer) testMock.anyValue(4));
     }
 
+    //----------------------------- verifyCalled ----------------------------------//
+
+    //---- Happy path ----//
+
+    private static TestMethod void called() {
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+        testMock.mockMethod(params.get(0), params.get(1));
+        testMock.mockMethod(params.get(0), params.get(1));
+
+        System.assertEquals(2, testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).calledCount);
+        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(2);
+    }
+
     //----------------------------- verifyNever ----------------------------------//
 
     //---- Happy path ----//
@@ -394,7 +395,8 @@ public with sharing class loli_MockTest {
         testMock.mockMethod(params.get(0), params.get(1));
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(1);
-        testMock.verifyNever().that(testMock.mockMethod(-1, -1));
+        testMock.verify().that(testMock.mockMethod(-1, -1)).never();
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.never())).mockMethod(-1, -1);
     }
 
     private static TestMethod void verifyNever_NoInvocation() {
@@ -402,7 +404,60 @@ public with sharing class loli_MockTest {
 
         Mock testMock = new Mock();
 
-        testMock.verifyNever().that(testMock.mockMethod(params.get(0), params.get(1)));
+        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).never();
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.never())).mockMethod(-1, -1);
+    }
+
+    //----------------------------- verifyAtLeast ----------------------------------//
+
+    //---- Happy path ----//
+
+    private static TestMethod void verify_atLeast() {
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+        testMock.mockMethod(params.get(0), params.get(1));
+        testMock.mockMethod(params.get(0), params.get(1));
+        testMock.mockMethod(params.get(0), params.get(1));
+        testMock.mockMethod(params.get(0), params.get(1));
+
+        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atLeast(4);
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atLeast(4))).mockMethod(params.get(0), params.get(1));
+    }
+
+    private static TestMethod void verify_atLeast_NoInvocation() {
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+
+        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atLeast(0);
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atLeast(0))).mockMethod(params.get(0), params.get(1));
+    }
+
+    //----------------------------- verifyAtMost ----------------------------------//
+
+    //---- Happy path ----//
+
+    private static TestMethod void verify_atMost() {
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+        testMock.mockMethod(params.get(0), params.get(1));
+        testMock.mockMethod(params.get(0), params.get(1));
+        testMock.mockMethod(params.get(0), params.get(1));
+        testMock.mockMethod(params.get(0), params.get(1));
+
+        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atMost(4);
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atMost(4))).mockMethod(params.get(0), params.get(1));
+    }
+
+    private static TestMethod void verify_atMost_NoInvocation() {
+        List<Object> params = new List<Object> {12, 16};
+
+        Mock testMock = new Mock();
+
+        testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atMost(0);
+        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atMost(0))).mockMethod(params.get(0), params.get(1));
     }
 
     //----------------------------- Any ----------------------------------//
@@ -439,7 +494,7 @@ public with sharing class loli_MockTest {
         String answer = testMock.mockMethod(25, 16);
         System.assertEquals(answerExpected, answer);
         testMock.verify().that(testMock.mockMethod(testMock.anyValue(25), testMock.anyInteger())).called(1);
-        testMock.verifyNever().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString()));
+        testMock.verify().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString())).never();
     }
 
     private static TestMethod void anyTest_NotMatching() {
@@ -450,7 +505,7 @@ public with sharing class loli_MockTest {
 
         String answer = testMock.mockMethod(16, 25);
         System.assertEquals(answerExpected, answer);
-        testMock.verifyNever().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString()));
+        testMock.verify().that(testMock.mockMethod(testMock.anyInteger(), testMock.anyString())).never();
     }
 
     //----------------------------- CustomMatcher ----------------------------------//
@@ -523,7 +578,7 @@ public with sharing class loli_MockTest {
         testMock.verify().that(testMock.mockMethod(exceptionParameters.get(0), exceptionParameters.get(1))).called(1);
         testMock.verify().that(testMock.mockMethodEmptyParameters()).called(1);
         System.assertEquals(0, testMock.verify().that(testMock.mockMethod(100, 200)).calledCount);
-        testMock.verifyNever().that(testMock.mockMethod(100, 200));
+        testMock.verify().that(testMock.mockMethod(100, 200)).never();
 
     }
 
