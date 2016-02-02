@@ -39,10 +39,31 @@ public with sharing class loli_Mock_Verification {
     }
 
     /**
-     * Compares the number of time called with the actual invocations
+     * Asserts the number of time called with the actual invocations
      */
     public void called(Integer count) {
-        System.assertEquals(count, calledCount, 'Invocations: ' + invocations);
+        System.assertEquals(count, calledCount, createInvocationString());
+    }
+
+    /**
+     * Asserts no invocation happened
+     */
+    public void never() {
+        System.assertEquals(0, calledCount, createInvocationString());
+    }
+
+    /**
+     * Asserts at least the specified count of invocations happened
+     */
+    public void atLeast(Integer count) {
+        System.assert(calledCount >= count, createInvocationString());
+    }
+
+    /**
+     * Asserts at most the specified count of invocations happened
+     */
+    public void atMost(Integer count) {
+        System.assert(calledCount <= count, createInvocationString());
     }
 
     private Boolean areInvocationsEqual(List<loli_Mock_Invocation> invocationsCompare) {
@@ -64,6 +85,13 @@ public with sharing class loli_Mock_Verification {
         }
 
         return true;
+    }
+
+    /**
+     * Creates invocation string for assert message
+     */
+    private String createInvocationString() {
+        return 'Invocations: ' + calledCount + ' --> ' + invocations;
     }
 
 }
