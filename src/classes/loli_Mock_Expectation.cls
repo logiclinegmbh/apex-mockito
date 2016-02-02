@@ -5,15 +5,20 @@ public with sharing class loli_Mock_Expectation {
 
 
     public enum ExpectationType {
-        called
+        called, atLeast, atMost, never
     }
 
     public ExpectationType expectedType {get; private set;}
     public Integer expectedCount {get; private set;}
 
+    public loli_Mock_Expectation(ExpectationType expectedType) {
+        this.expectedType = expectedType;
+        this.expectedCount = 0;
+    }
+
 
     public loli_Mock_Expectation(ExpectationType expectedType, Integer expectedCount) {
-        this.expectedType = expectedType;
+        this(expectedType);
         this.expectedCount = expectedCount;
     }
 
@@ -22,6 +27,27 @@ public with sharing class loli_Mock_Expectation {
      */
     public static loli_Mock_Expectation called(Integer count) {
         return new loli_Mock_Expectation(ExpectationType.called, count);
+    }
+
+    /**
+     * Utility method for creating a never expectation
+     */
+    public static loli_Mock_Expectation never() {
+        return new loli_Mock_Expectation(ExpectationType.never);
+    }
+
+    /**
+     * Utility method for creating a atLeast expectation
+     */
+    public static loli_Mock_Expectation atLeast(Integer count) {
+        return new loli_Mock_Expectation(ExpectationType.atLeast, count);
+    }
+
+    /**
+     * Utility method for creating a atMost expectation
+     */
+    public static loli_Mock_Expectation atMost(Integer count) {
+        return new loli_Mock_Expectation(ExpectationType.atMost, count);
     }
 
 
