@@ -1,27 +1,27 @@
 /**
  * Contains details about a specific invocation
  */
-public with sharing class loli_Mock_Invocation {
+public with sharing class loli_mock_Invocation {
 
     public String methodName {get; private set;}
     public List<Object> parameters {get; private set;}
 
-    public loli_Mock_Invocation(String methodName, List<Object> parameters) {
+    public loli_mock_Invocation(String methodName, List<Object> parameters) {
         this.methodName = methodName;
         this.parameters = parameters;
     }
 
-    public loli_Mock_Invocation(String methodName) {
+    public loli_mock_Invocation(String methodName) {
         this(methodName, new List<Object>());
     }
 
 
     public Boolean equals(Object compare) {
-        if (!(compare instanceof loli_Mock_Invocation)) {
+        if (!(compare instanceof loli_mock_Invocation)) {
             return false;
         }
 
-        loli_Mock_Invocation invocationCompare = (loli_Mock_Invocation) compare;
+        loli_mock_Invocation invocationCompare = (loli_mock_Invocation) compare;
         return methodName == invocationCompare.methodName && areParametersEqual(invocationCompare.parameters);
     }
 

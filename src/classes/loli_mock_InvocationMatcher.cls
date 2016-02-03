@@ -2,11 +2,11 @@
  * Invocation matcher
  */
 
-public with sharing class loli_Mock_InvocationMatcher implements loli_Mock_IMatcher {
+public with sharing class loli_mock_InvocationMatcher implements loli_mock_IMatcher {
 
-    loli_Mock_Invocation invocationToMatch;
+    loli_mock_Invocation invocationToMatch;
 
-    public loli_Mock_InvocationMatcher(loli_Mock_Invocation invocationToMatch) {
+    public loli_mock_InvocationMatcher(loli_mock_Invocation invocationToMatch) {
         this.invocationToMatch = invocationToMatch;
     }
 
@@ -14,11 +14,11 @@ public with sharing class loli_Mock_InvocationMatcher implements loli_Mock_IMatc
      * Checks if invocation matches with expected invocation
      */
     public Boolean matches(Object compare) {
-        if (!(compare instanceof loli_Mock_Invocation)) {
+        if (!(compare instanceof loli_mock_Invocation)) {
             return false;
         }
 
-        loli_Mock_Invocation invocation = (loli_Mock_Invocation) compare;
+        loli_mock_Invocation invocation = (loli_mock_Invocation) compare;
         if (!isMethodMatching(invocationToMatch.methodName, invocation.methodName)) {
             return false;
         }
@@ -29,7 +29,7 @@ public with sharing class loli_Mock_InvocationMatcher implements loli_Mock_IMatc
     /**
      * Checks if parameters are matching
      */
-    private Boolean areParametersMatching(loli_Mock_Invocation invocationExpected, loli_Mock_Invocation invocation) {
+    private Boolean areParametersMatching(loli_mock_Invocation invocationExpected, loli_mock_Invocation invocation) {
         if (invocationExpected.parameters != null) {
             if (invocation == null || invocationExpected.parameters.size() != invocation.parameters.size()) {
                 return false;
@@ -61,8 +61,8 @@ public with sharing class loli_Mock_InvocationMatcher implements loli_Mock_IMatc
      */
     private static Boolean isParameterMatching(Object parameterExpected, Object parameterReceived) {
         // In case it is a matcher, call matcher method, otherwise test for equality
-        if (parameterExpected instanceof loli_Mock_IMatcher) {
-            return ((loli_Mock_IMatcher) parameterExpected).matches(parameterReceived);
+        if (parameterExpected instanceof loli_mock_IMatcher) {
+            return ((loli_mock_IMatcher) parameterExpected).matches(parameterReceived);
         } else {
             return parameterExpected == parameterReceived;
         }

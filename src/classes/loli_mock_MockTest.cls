@@ -1,11 +1,11 @@
 @isTest
-public with sharing class loli_MockTest {
+public with sharing class loli_mock_MockTest {
 
     //----------------------------- Classes/Interfaces ----------------------------------//
 
     private class TestException extends Exception{}
 
-    private class Mock extends loli_Mock_MockBase {
+    private class Mock extends loli_mock_MockBase {
 
         public String mockMethod(Object param1, Object param2) {
             return (String) super.doInvocation('mockMethod', new List<Object> {param1, param2});
@@ -28,7 +28,7 @@ public with sharing class loli_MockTest {
 
     }
 
-    private class Answer implements loli_Mock_IAnswer {
+    private class Answer implements loli_mock_IAnswer {
 
         private Object answer;
 
@@ -38,13 +38,13 @@ public with sharing class loli_MockTest {
             this.answer = answer;
         }
 
-        public Object onInvocation(loli_Mock_Invocation invocation) {
+        public Object onInvocation(loli_mock_Invocation invocation) {
             return answer;
         }
 
     }
 
-    private class Matcher implements loli_Mock_IMatcher {
+    private class Matcher implements loli_mock_IMatcher {
 
         private Boolean isMatching = false;
 
@@ -64,13 +64,13 @@ public with sharing class loli_MockTest {
 
     public static TestMethod void addCannedResponse_Single() {
         String methodName = 'mockMethod';
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocation = new loli_mock_Invocation(methodName, new List<Object> {10, 12});
 
         Mock testMock = new Mock();
         testMock.addCannedResponse(invocation, cannedResponseAnswer);
 
-        List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(1, cannedResponseList.size());
@@ -80,15 +80,15 @@ public with sharing class loli_MockTest {
 
     public static TestMethod void addCannedResponse_Multiple() {
         String methodName = 'mockMethod';
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
-        loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 16});
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocation = new loli_mock_Invocation(methodName, new List<Object> {10, 12});
+        loli_mock_Invocation otherInvocation = new loli_mock_Invocation(methodName, new List<Object> {10, 16});
 
         Mock testMock = new Mock();
         testMock.addCannedResponse(invocation, cannedResponseAnswer);
         testMock.addCannedResponse(otherInvocation, cannedResponseAnswer);
 
-        List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(2, cannedResponseList.size());
@@ -98,15 +98,15 @@ public with sharing class loli_MockTest {
 
     public static TestMethod void addCannedResponse_Multiple_SameParameters() {
         String methodName = 'mockMethod';
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
-        loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocation = new loli_mock_Invocation(methodName, new List<Object> {10, 12});
+        loli_mock_Invocation otherInvocation = new loli_mock_Invocation(methodName, new List<Object> {10, 12});
 
         Mock testMock = new Mock();
         testMock.addCannedResponse(invocation, cannedResponseAnswer);
         testMock.addCannedResponse(otherInvocation, cannedResponseAnswer);
 
-        List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(1, cannedResponseList.size());
@@ -116,15 +116,15 @@ public with sharing class loli_MockTest {
     public static TestMethod void addCannedResponse_Multiple_DifferentMethod() {
         String methodName = 'mockMethod';
         String otherMethodName = 'otherMethod';
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, new List<Object> {10, 12});
-        loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(otherMethodName, new List<Object> {16, 20});
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocation = new loli_mock_Invocation(methodName, new List<Object> {10, 12});
+        loli_mock_Invocation otherInvocation = new loli_mock_Invocation(otherMethodName, new List<Object> {16, 20});
 
         Mock testMock = new Mock();
         testMock.addCannedResponse(invocation, cannedResponseAnswer);
         testMock.addCannedResponse(otherInvocation, cannedResponseAnswer);
 
-        List<loli_Mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponseList = testMock.getResponses(methodName);
 
         System.assert(cannedResponseList != null);
         System.assertEquals(1, cannedResponseList.size());
@@ -140,12 +140,12 @@ public with sharing class loli_MockTest {
         String methodName = 'mockMethod';
         String answer = 'hello World';
         List<Object> params = new List<Object> {10, 12};
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
 
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenReturn(answer);
 
-        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
 
         System.assert(cannedResponses != null);
         System.assertEquals(1, cannedResponses.size());
@@ -155,12 +155,12 @@ public with sharing class loli_MockTest {
     public static TestMethod void when_Single_MethodWithNoParameters() {
         String methodName = 'mockMethodEmptyParameters';
         String answer = 'hello World';
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName);
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName);
 
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethodEmptyParameters()).thenReturn(answer);
 
-        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
 
         System.assert(cannedResponses != null);
         System.assertEquals(1, cannedResponses.size());
@@ -172,14 +172,14 @@ public with sharing class loli_MockTest {
         String answer = 'hello World';
         List<Object> params = new List<Object> {10, 12};
         List<Object> otherParams = new List<Object> {16, 18};
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
-        loli_Mock_Invocation otherInvocation = new loli_Mock_Invocation(methodName, otherParams);
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
+        loli_mock_Invocation otherInvocation = new loli_mock_Invocation(methodName, otherParams);
 
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenReturn(answer);
         testMock.when().invocation(testMock.mockMethod(otherParams.get(0), otherParams.get(1))).thenReturn(answer);
 
-        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
 
         System.assert(cannedResponses != null);
         System.assertEquals(2, cannedResponses.size());
@@ -195,12 +195,12 @@ public with sharing class loli_MockTest {
         String methodName = 'mockMethod';
         String answer = 'hello World';
         List<Object> params = new List<Object> {10, 12};
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
 
         Mock testMock = new Mock();
         ((Mock) testMock.when().answerFor(answer)).mockMethod(params.get(0), params.get(1));
 
-        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
         String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
 
         System.assert(cannedResponses != null);
@@ -213,12 +213,12 @@ public with sharing class loli_MockTest {
         String methodName = 'mockMethod';
         String answer = 'hello World';
         List<Object> params = new List<Object> {10, 12};
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
 
         Mock testMock = new Mock();
         ((Mock) testMock.when().answerFor(answer)).mockMethod(testMock.anyInteger(), testMock.anyValue(params.get(1)));
 
-        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
         String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
 
         System.assert(cannedResponses != null);
@@ -232,13 +232,13 @@ public with sharing class loli_MockTest {
         String answerString = 'hello World';
         Answer answer = new Answer(answerString);
         List<Object> params = new List<Object> {10, 12};
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
 
         Mock testMock = new Mock();
         ((Mock) testMock.when().answerFor(answer)).mockMethod(params.get(0), params.get(1));
         String answerReturned = testMock.mockMethod(params.get(0), params.get(1));
 
-        List<loli_Mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
+        List<loli_mock_CannedResponse> cannedResponses = testMock.getResponses(methodName);
 
         System.assert(cannedResponses != null);
         System.assertEquals(1, cannedResponses.size());
@@ -329,16 +329,16 @@ public with sharing class loli_MockTest {
     private static TestMethod void verify_Single() {
         String methodName = 'mockMethod';
         List<Object> params = new List<Object> {12, 16};
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
-        List<loli_Mock_Invocation> invocationExpectedList = new List<loli_Mock_Invocation> {invocationExpected};
-        loli_Mock_Verification verficationExpected = new loli_Mock_Verification(methodName, invocationExpectedList);
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
+        List<loli_mock_Invocation> invocationExpectedList = new List<loli_mock_Invocation> {invocationExpected};
+        loli_mock_Verification verficationExpected = new loli_mock_Verification(methodName, invocationExpectedList);
 
         Mock testMock = new Mock();
         testMock.addCannedResponse(invocationExpected, cannedResponseAnswer);
         testMock.mockMethod(params.get(0), params.get(1));
 
-        loli_Mock_Verification verfication = testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1)));
+        loli_mock_Verification verfication = testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1)));
 
         System.assert(verfication != null);
         System.assertEquals(verficationExpected, verfication);
@@ -346,15 +346,15 @@ public with sharing class loli_MockTest {
 
     private static TestMethod void verify_EmptyParams() {
         String methodName = 'mockMethodEmptyParameters';
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName);
-        List<loli_Mock_Invocation> invocationExpectedList = new List<loli_Mock_Invocation> {invocationExpected};
-        loli_Mock_Verification verficationExpected = new loli_Mock_Verification(methodName, invocationExpectedList);
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName);
+        List<loli_mock_Invocation> invocationExpectedList = new List<loli_mock_Invocation> {invocationExpected};
+        loli_mock_Verification verficationExpected = new loli_mock_Verification(methodName, invocationExpectedList);
 
         Mock testMock = new Mock();
         testMock.mockMethodEmptyParameters();
 
-        loli_Mock_Verification verfication = testMock.verify().that(testMock.mockMethodEmptyParameters());
+        loli_mock_Verification verfication = testMock.verify().that(testMock.mockMethodEmptyParameters());
 
         System.assert(verfication != null);
         System.assertEquals(verficationExpected, verfication);
@@ -363,16 +363,16 @@ public with sharing class loli_MockTest {
     private static TestMethod void verify_Multiple() {
         String methodName = 'mockMethod';
         List<Object> params = new List<Object> {12, 16};
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
-        List<loli_Mock_Invocation> invocationExpectedList = new List<loli_Mock_Invocation> {invocationExpected, invocationExpected};
-        loli_Mock_Verification verficationExpected = new loli_Mock_Verification(methodName, invocationExpectedList);
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
+        List<loli_mock_Invocation> invocationExpectedList = new List<loli_mock_Invocation> {invocationExpected, invocationExpected};
+        loli_mock_Verification verficationExpected = new loli_mock_Verification(methodName, invocationExpectedList);
 
         Mock testMock = new Mock();
         testMock.mockMethod(params.get(0), params.get(1));
         testMock.mockMethod(params.get(0), params.get(1));
 
-        loli_Mock_Verification verfication = testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1)));
+        loli_mock_Verification verfication = testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1)));
 
         System.assert(verfication != null);
         System.assertEquals(verficationExpected, verfication);
@@ -382,19 +382,19 @@ public with sharing class loli_MockTest {
         String methodName = 'mockMethod';
         List<Object> params = new List<Object> {12, 16};
         List<Object> otherParams = new List<Object> {18, 20};
-        loli_Mock_IAnswer cannedResponseAnswer = new Answer();
-        loli_Mock_Invocation invocationExpected = new loli_Mock_Invocation(methodName, params);
-        loli_Mock_Invocation otehrInvocationParams = new loli_Mock_Invocation(methodName, otherParams);
-        loli_Mock_Invocation otherInvocationMethodName = new loli_Mock_Invocation('mockMethodEmptyParameters', params);
-        List<loli_Mock_Invocation> invocationExpectedList = new List<loli_Mock_Invocation> {invocationExpected};
-        loli_Mock_Verification verficationExpected = new loli_Mock_Verification(methodName, invocationExpectedList);
+        loli_mock_IAnswer cannedResponseAnswer = new Answer();
+        loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
+        loli_mock_Invocation otehrInvocationParams = new loli_mock_Invocation(methodName, otherParams);
+        loli_mock_Invocation otherInvocationMethodName = new loli_mock_Invocation('mockMethodEmptyParameters', params);
+        List<loli_mock_Invocation> invocationExpectedList = new List<loli_mock_Invocation> {invocationExpected};
+        loli_mock_Verification verficationExpected = new loli_mock_Verification(methodName, invocationExpectedList);
 
         Mock testMock = new Mock();
         testMock.mockMethod(params.get(0), params.get(1));
         testMock.mockMethod(otherParams.get(0), otherParams.get(1));
         testMock.mockMethodEmptyParameters();
 
-        loli_Mock_Verification verfication = testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1)));
+        loli_mock_Verification verfication = testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1)));
 
         System.assert(verfication != null);
         System.assertEquals(verficationExpected, verfication);
@@ -412,7 +412,7 @@ public with sharing class loli_MockTest {
         Mock testMock = new Mock();
         testMock.mockMethod(params.get(0), params.get(1));
 
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(1))).mockMethod(params.get(0), params.get(1));
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.called(1))).mockMethod(params.get(0), params.get(1));
     }
 
     private static TestMethod void that_Expectation_VoidMethod() {
@@ -423,9 +423,9 @@ public with sharing class loli_MockTest {
         testMock.mockVoidMethod(param);
         testMock.mockVoidMethod(param);
 
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(2))).mockVoidMethod(param);
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(2))).mockVoidMethod(testMock.anyInteger());
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(2))).mockVoidMethod((Integer) testMock.anyValue(4));
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.called(2))).mockVoidMethod(param);
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.called(2))).mockVoidMethod(testMock.anyInteger());
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.called(2))).mockVoidMethod((Integer) testMock.anyValue(4));
     }
 
     //----------------------------- verifyCalled ----------------------------------//
@@ -455,7 +455,7 @@ public with sharing class loli_MockTest {
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).called(1);
         testMock.verify().that(testMock.mockMethod(-1, -1)).never();
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.never())).mockMethod(-1, -1);
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.never())).mockMethod(-1, -1);
     }
 
     private static TestMethod void verifyNever_NoInvocation() {
@@ -464,7 +464,7 @@ public with sharing class loli_MockTest {
         Mock testMock = new Mock();
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).never();
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.never())).mockMethod(-1, -1);
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.never())).mockMethod(-1, -1);
     }
 
     //----------------------------- verifyAtLeast ----------------------------------//
@@ -481,7 +481,7 @@ public with sharing class loli_MockTest {
         testMock.mockMethod(params.get(0), params.get(1));
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atLeast(4);
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atLeast(4))).mockMethod(params.get(0), params.get(1));
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.atLeast(4))).mockMethod(params.get(0), params.get(1));
     }
 
     private static TestMethod void verify_atLeast_NoInvocation() {
@@ -490,7 +490,7 @@ public with sharing class loli_MockTest {
         Mock testMock = new Mock();
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atLeast(0);
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atLeast(0))).mockMethod(params.get(0), params.get(1));
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.atLeast(0))).mockMethod(params.get(0), params.get(1));
     }
 
     //----------------------------- verifyAtMost ----------------------------------//
@@ -507,7 +507,7 @@ public with sharing class loli_MockTest {
         testMock.mockMethod(params.get(0), params.get(1));
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atMost(4);
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atMost(4))).mockMethod(params.get(0), params.get(1));
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.atMost(4))).mockMethod(params.get(0), params.get(1));
     }
 
     private static TestMethod void verify_atMost_NoInvocation() {
@@ -516,7 +516,7 @@ public with sharing class loli_MockTest {
         Mock testMock = new Mock();
 
         testMock.verify().that(testMock.mockMethod(params.get(0), params.get(1))).atMost(0);
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.atMost(0))).mockMethod(params.get(0), params.get(1));
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.atMost(0))).mockMethod(params.get(0), params.get(1));
     }
 
     //----------------------------- Any ----------------------------------//
@@ -538,7 +538,7 @@ public with sharing class loli_MockTest {
         testMock.verify().that(testMock.mockAllTypes(testMock.anyInteger(), testMock.anyString(),
                 testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
                 testMock.anyDouble(), testMock.anyId(), testMock.anyLong(), (String) testMock.anyObject(), (Account) testMock.anySObject())).called(1);
-        ((Mock) testMock.verify().expectationFor(loli_Mock_Expectation.called(1))).mockAllTypes(testMock.anyInteger(), testMock.anyString(),
+        ((Mock) testMock.verify().expectationFor(loli_mock_Expectation.called(1))).mockAllTypes(testMock.anyInteger(), testMock.anyString(),
                 testMock.anyBoolean(), testMock.anyDecimal(), (List<String>) testMock.anyIterable(), testMock.anyDate(), testMock.anyDateTime(),
                 testMock.anyDouble(), testMock.anyId(), testMock.anyLong(), (String) testMock.anyObject(), (Account) testMock.anySObject());
 
@@ -573,7 +573,7 @@ public with sharing class loli_MockTest {
 
     private static TestMethod void matcher() {
         String answerExpected = 'works';
-        loli_Mock_IMatcher testMatcher = new Matcher(true);
+        loli_mock_IMatcher testMatcher = new Matcher(true);
 
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethod(testMock.anyInteger(), testMock.matcher(testMatcher))).thenReturn(answerExpected);

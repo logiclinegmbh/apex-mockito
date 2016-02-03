@@ -1,7 +1,7 @@
 /**
  * Base class for mocking
  */
-public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
+public abstract with sharing class loli_mock_MockBase implements loli_mock_IMock {
 
 
     /**
@@ -15,28 +15,28 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     // Current mock status --> used to determine how to handle mock invocations
     private Status mockStatus = Status.inExecution;
     // Holds an invocation in case of when/verify
-    private loli_Mock_Invocation invocationHolder;
+    private loli_mock_Invocation invocationHolder;
     // Holds expectation in case verify/expectationFor is used
-    private loli_Mock_Expectation expectationHolder;
+    private loli_mock_Expectation expectationHolder;
     // Holds answer in case when/answerFor is used
-    private loli_Mock_IAnswer answerHolder;
+    private loli_mock_IAnswer answerHolder;
     // Holds matchers for invocation (if any specified)
-    private List<loli_Mock_IMatcher> matchers = new List<loli_Mock_IMatcher>();
+    private List<loli_mock_IMatcher> matchers = new List<loli_mock_IMatcher>();
 
 
 
     // Canned responses for each method
-    private Map<String, List<loli_Mock_CannedResponse>> cannedResponseByMethodName = new Map<String, List<loli_Mock_CannedResponse>>();
+    private Map<String, List<loli_mock_CannedResponse>> cannedResponseByMethodName = new Map<String, List<loli_mock_CannedResponse>>();
     // Recorded responses for each method
-    private Map<String, List<loli_Mock_Invocation>> invocationsByMethodName = new Map<String, List<loli_Mock_Invocation>>();
+    private Map<String, List<loli_mock_Invocation>> invocationsByMethodName = new Map<String, List<loli_mock_Invocation>>();
 
-    public void addCannedResponse(loli_Mock_Invocation invocation, loli_Mock_IAnswer answer) {
-        loli_Mock_CannedResponse newCannedResponse = new loli_Mock_CannedResponse(invocation, answer);
-        List<loli_Mock_CannedResponse> cannedResponseList = cannedResponseByMethodName.get(invocation.methodName);
+    public void addCannedResponse(loli_mock_Invocation invocation, loli_mock_IAnswer answer) {
+        loli_mock_CannedResponse newCannedResponse = new loli_mock_CannedResponse(invocation, answer);
+        List<loli_mock_CannedResponse> cannedResponseList = cannedResponseByMethodName.get(invocation.methodName);
 
         // In case canned responses do not yet exist for method add method and new canned response
         if (cannedResponseList == null) {
-            cannedResponseList = new List<loli_Mock_CannedResponse>();
+            cannedResponseList = new List<loli_mock_CannedResponse>();
             cannedResponseByMethodName.put(invocation.methodName, cannedResponseList);
             cannedResponseList.add(newCannedResponse);
         } else {
@@ -44,40 +44,40 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         }
     }
 
-    public List<loli_Mock_CannedResponse> getResponses(String methodName) {
+    public List<loli_mock_CannedResponse> getResponses(String methodName) {
         return cannedResponseByMethodName.get(methodName);
     }
 
-    public loli_IMock when() {
+    public loli_mock_IMock when() {
         mockStatus = Status.inWhen;
         return this;
     }
 
-    public loli_IMock verify() {
+    public loli_mock_IMock verify() {
         mockStatus = Status.inVerify;
         return this;
     }
 
-    public loli_Mock_PostAnswer invocation(Object fromInvocation) {
-        loli_Mock_Invocation invocation = makeInvocation(invocationHolder);
-        loli_Mock_PostAnswer expectation = new loli_Mock_PostAnswer(this, invocation);
+    public loli_mock_PostAnswer invocation(Object fromInvocation) {
+        loli_mock_Invocation invocation = makeInvocation(invocationHolder);
+        loli_mock_PostAnswer expectation = new loli_mock_PostAnswer(this, invocation);
         resetMockToDefault();
         return expectation;
     }
 
-    public loli_IMock answerFor(Object answer) {
+    public loli_mock_IMock answerFor(Object answer) {
         mockStatus = Status.inWhenAnswerFor;
-        if (!(answer instanceof loli_Mock_IAnswer)) {
-            answerHolder = new loli_Mock_Answer.ThenReturnAnswer(answer);
+        if (!(answer instanceof loli_mock_IAnswer)) {
+            answerHolder = new loli_mock_Answer.ThenReturnAnswer(answer);
         } else {
-            answerHolder = (loli_Mock_IAnswer) answer;
+            answerHolder = (loli_mock_IAnswer) answer;
         }
         return this;
     }
 
-    public loli_Mock_Verification that(Object fromInvocation) {
-        loli_Mock_Invocation invocation = makeInvocation(invocationHolder);
-        loli_Mock_Verification verification;
+    public loli_mock_Verification that(Object fromInvocation) {
+        loli_mock_Invocation invocation = makeInvocation(invocationHolder);
+        loli_mock_Verification verification;
         if (mockStatus == Status.inVerify) {
             verification = makeVerify(invocation);
         }
@@ -85,14 +85,14 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return verification;
     }
 
-    public Object expectationFor(loli_Mock_Expectation expectation) {
+    public Object expectationFor(loli_mock_Expectation expectation) {
         expectationHolder = expectation;
         mockStatus = Status.inVerifyExpectationFor;
         return this;
     }
 
     public Object doInvocation(String methodName, List<Object> parameters) {
-        loli_Mock_Invocation invocation = new loli_Mock_Invocation(methodName, parameters);
+        loli_mock_Invocation invocation = new loli_mock_Invocation(methodName, parameters);
 
         // Perform invocation based on mock state:
         if (mockStatus == Status.inExecution) {
@@ -109,7 +109,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
             // Verification is performed at the end of mock call chain
             // --> calling method performs verification then
             invocation = makeInvocation(invocation);
-            loli_Mock_Verification verification = makeVerify(invocation);
+            loli_mock_Verification verification = makeVerify(invocation);
             verification.verifyExpectation(expectationHolder);
             resetMockToDefault();
         }
@@ -120,7 +120,7 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         return doInvocation(methodName, new List<Object>());
     }
 
-    public Object matcher(loli_Mock_IMatcher customMatcher) {
+    public Object matcher(loli_mock_IMatcher customMatcher) {
         matchers.add(customMatcher);
         return null;
     }
@@ -130,15 +130,15 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      * Adds a new canned response for a method to existing list of canned responses
      * In case a canned method with the same paramters already exists is is overwritten
      */
-    private void addCannedResponseForMethod(loli_Mock_Invocation invocation, loli_Mock_CannedResponse newCannedResponse,
-            List<loli_Mock_CannedResponse> cannedResponsesForMethod) {
+    private void addCannedResponseForMethod(loli_mock_Invocation invocation, loli_mock_CannedResponse newCannedResponse,
+            List<loli_mock_CannedResponse> cannedResponsesForMethod) {
         Boolean isCannedResponseAlreadyExisiting = false;
         Integer cannedResponseIndex = 0;
         Integer cannedResponseExistingIndex;
 
         // Search for identical canned response
         while (!isCannedResponseAlreadyExisiting && cannedResponseIndex < cannedResponsesForMethod.size()) {
-            loli_Mock_CannedResponse cannedResponseExisting = cannedResponsesForMethod.get(cannedResponseIndex);
+            loli_mock_CannedResponse cannedResponseExisting = cannedResponsesForMethod.get(cannedResponseIndex);
             if (cannedResponseExisting.invocationMatcher.matches(invocation)) {
                 isCannedResponseAlreadyExisiting = true;
                 cannedResponseExistingIndex = cannedResponseIndex;
@@ -158,14 +158,14 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
      * Returns the mocked response for a mock and method call
      * If no canned response exists for the method/method call then null is returned
      */
-    private Object invokeCannedResponse(loli_Mock_Invocation invocation) {
-        List<loli_Mock_CannedResponse> cannedResponsesForMethod = cannedResponseByMethodName.get(invocation.methodName);
+    private Object invokeCannedResponse(loli_mock_Invocation invocation) {
+        List<loli_mock_CannedResponse> cannedResponsesForMethod = cannedResponseByMethodName.get(invocation.methodName);
         if (cannedResponsesForMethod == null || cannedResponsesForMethod.isEmpty()) {
             return null;
         }
 
         // In case a canned response is found invoke mocked answer
-        for (loli_Mock_CannedResponse cannedResponse : cannedResponsesForMethod) {
+        for (loli_mock_CannedResponse cannedResponse : cannedResponsesForMethod) {
             if (cannedResponse.invocationMatcher.matches(invocation)) {
                 return cannedResponse.answer.onInvocation(invocation);
             }
@@ -177,10 +177,10 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
     /**
      * Records an invocation that happened on the mock
      */
-    private void recordInvocation(loli_Mock_Invocation invocation) {
-        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
+    private void recordInvocation(loli_mock_Invocation invocation) {
+        List<loli_mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
         if (invocationsForMethod == null) {
-            invocationsForMethod = new List<loli_Mock_Invocation>();
+            invocationsForMethod = new List<loli_mock_Invocation>();
             invocationsByMethodName.put(invocation.methodName, invocationsForMethod);
         }
         invocationsForMethod.add(invocation);
@@ -193,36 +193,36 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
         invocationHolder = null;
         expectationHolder = null;
         answerHolder = null;
-        matchers = new List<loli_Mock_IMatcher>();
+        matchers = new List<loli_mock_IMatcher>();
         mockStatus = Status.inExecution;
     }
 
     /**
      * Performs verify
      */
-    private loli_Mock_Verification makeVerify(loli_Mock_Invocation invocation) {
+    private loli_mock_Verification makeVerify(loli_mock_Invocation invocation) {
         // Check if there exists an invocations --> return verifications with empty verification list in case not
-        List<loli_Mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
+        List<loli_mock_Invocation> invocationsForMethod = invocationsByMethodName.get(invocation.methodName);
         if (invocationsForMethod == null || invocationsForMethod.isEmpty()) {
-            return new loli_Mock_Verification(invocation.methodName);
+            return new loli_mock_Verification(invocation.methodName);
         }
 
         // Gather matching invocations
-        List<loli_Mock_Invocation> invocationsMatching = new List<loli_Mock_Invocation>();
-        loli_Mock_InvocationMatcher matcher = new loli_Mock_InvocationMatcher(invocation);
-        for (loli_Mock_Invocation invocationRecorded : invocationsForMethod) {
+        List<loli_mock_Invocation> invocationsMatching = new List<loli_mock_Invocation>();
+        loli_mock_InvocationMatcher matcher = new loli_mock_InvocationMatcher(invocation);
+        for (loli_mock_Invocation invocationRecorded : invocationsForMethod) {
             if (matcher.matches(invocationRecorded)) {
                 invocationsMatching.add(invocationRecorded);
             }
         }
-        return new loli_Mock_Verification(invocation.methodName, invocationsMatching);
+        return new loli_mock_Verification(invocation.methodName, invocationsMatching);
     }
 
     /**
      * Creates the invocation for when/verify
      * In case matchers are used these are set as parameters for the invocation, otherwise the real values
      */
-    private loli_Mock_Invocation makeInvocation(loli_Mock_Invocation invocation) {
+    private loli_mock_Invocation makeInvocation(loli_mock_Invocation invocation) {
         if (matchers.isEmpty()) {
             return invocation;
         } else {
@@ -230,80 +230,80 @@ public abstract with sharing class loli_Mock_MockBase implements loli_IMock {
                 System.assert(false, 'You have to use any for all values');
             }
 
-            return new loli_Mock_Invocation(invocation.methodName, matchers);
+            return new loli_mock_Invocation(invocation.methodName, matchers);
         }
     }
 
     //----------------------------- Any ----------------------------------//
 
     public String anyString() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyStringMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyStringMatcher());
         return null;
     }
 
     public Integer anyInteger() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyIntegerMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyIntegerMatcher());
         return null;
     }
 
     public Boolean anyBoolean() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyBooleanMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyBooleanMatcher());
         return null;
     }
 
     public Date anyDate() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyDateMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyDateMatcher());
         return null;
     }
 
     public DateTime anyDateTime() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyDateTimeMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyDateTimeMatcher());
         return null;
     }
 
     public Decimal anyDecimal() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyDecimalMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyDecimalMatcher());
         return null;
     }
 
     public Double anyDouble() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyDoubleMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyDoubleMatcher());
         return null;
     }
 
     public Id anyId() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyIdMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyIdMatcher());
         return null;
     }
 
     public Long anyLong() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyLongMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyLongMatcher());
         return null;
     }
 
     public Time anyTime() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyTimeMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyTimeMatcher());
         return null;
     }
 
     public Iterable<Object> anyIterable() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyIterableMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyIterableMatcher());
         return null;
     }
 
     public sObject anySObject() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnySObjectMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnySObjectMatcher());
         return null;
     }
 
     public Object anyObject() {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyObjectMatcher());
+        matchers.add(new loli_mock_ParameterMatcher.AnyObjectMatcher());
         return null;
     }
 
 
     public Object anyValue(Object valueHolder) {
-        matchers.add(new loli_Mock_ParameterMatcher.AnyValueMatcher(valueHolder));
+        matchers.add(new loli_mock_ParameterMatcher.AnyValueMatcher(valueHolder));
         return null;
     }
 

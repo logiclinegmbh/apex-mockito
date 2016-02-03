@@ -2,12 +2,12 @@
  * Matchers for parameters
  */
 
-public with sharing class loli_Mock_ParameterMatcher {
+public with sharing class loli_mock_ParameterMatcher {
 
     /**
      * Any string matcher
      */
-    public class AnyStringMatcher implements loli_Mock_IMatcher {
+    public class AnyStringMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof String)) {
@@ -22,7 +22,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any integer matcher
      */
-    public class AnyIntegerMatcher implements loli_Mock_IMatcher {
+    public class AnyIntegerMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Integer)) {
@@ -37,7 +37,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any boolean matcher
      */
-    public class AnyBooleanMatcher implements loli_Mock_IMatcher {
+    public class AnyBooleanMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Boolean)) {
@@ -52,7 +52,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any date matcher
      */
-    public class AnyDateMatcher implements loli_Mock_IMatcher {
+    public class AnyDateMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Date)) {
@@ -67,7 +67,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any datetime matcher
      */
-    public class AnyDateTimeMatcher implements loli_Mock_IMatcher {
+    public class AnyDateTimeMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof DateTime)) {
@@ -82,7 +82,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any decimal matcher
      */
-    public class AnyDecimalMatcher implements loli_Mock_IMatcher {
+    public class AnyDecimalMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Decimal)) {
@@ -97,7 +97,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any double matcher
      */
-    public class AnyDoubleMatcher implements loli_Mock_IMatcher {
+    public class AnyDoubleMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Double)) {
@@ -112,7 +112,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any id matcher
      */
-    public class AnyIdMatcher implements loli_Mock_IMatcher {
+    public class AnyIdMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof ID)) {
@@ -127,7 +127,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any long matcher
      */
-    public class AnyLongMatcher implements loli_Mock_IMatcher {
+    public class AnyLongMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Long)) {
@@ -142,7 +142,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any time matcher
      */
-    public class AnyTimeMatcher implements loli_Mock_IMatcher {
+    public class AnyTimeMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Time)) {
@@ -157,7 +157,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any iterable matcher
      */
-    public class AnyIterableMatcher implements loli_Mock_IMatcher {
+    public class AnyIterableMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof Iterable<Object>)) {
@@ -172,7 +172,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any object matcher
      */
-    public class AnyObjectMatcher implements loli_Mock_IMatcher {
+    public class AnyObjectMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             return true;
@@ -183,7 +183,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any sobject matcher
      */
-    public class AnySObjectMatcher implements loli_Mock_IMatcher {
+    public class AnySObjectMatcher implements loli_mock_IMatcher {
 
         public Boolean matches(Object compare) {
             if ((compare instanceof sObject)) {
@@ -198,7 +198,7 @@ public with sharing class loli_Mock_ParameterMatcher {
     /**
      * Any value matcher
      */
-    public class AnyValueMatcher implements loli_Mock_IMatcher {
+    public class AnyValueMatcher implements loli_mock_IMatcher {
 
         private Object valueBase;
 
