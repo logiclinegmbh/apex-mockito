@@ -1,47 +1,47 @@
 /**
  * Basic mock interface
  */
-public interface loli_IMock {
+public interface loli_mock_IMock {
 
     /**
      * Adds a canned response to the mock
      */
-    void addCannedResponse(loli_Mock_Invocation invocation, loli_Mock_IAnswer answer);
+    void addCannedResponse(loli_mock_Invocation invocation, loli_mock_IAnswer answer);
 
     /**
      * Returns mocked responses for a method
      */
-    List<loli_Mock_CannedResponse> getResponses(String methodName);
+    List<loli_mock_CannedResponse> getResponses(String methodName);
 
     /**
      * Handles when() invocation
      */
-    loli_Mock_PostAnswer invocation(Object fromInvocation);
+    loli_mock_PostAnswer invocation(Object fromInvocation);
 
     /**
      * Handles when() in case answer provided before defining invocation
      */
-    loli_IMock answerFor(Object answer);
+    loli_mock_IMock answerFor(Object answer);
 
     /**
      * Starts mocking
      */
-    loli_IMock when();
+    loli_mock_IMock when();
 
     /**
      * Starts verification
      */
-    loli_IMock verify();
+    loli_mock_IMock verify();
 
     /**
      * Handles verify() invocation
      */
-    loli_Mock_Verification that(Object fromInvocation);
+    loli_mock_Verification that(Object fromInvocation);
 
     /**
      * Handles verify() in case expectation provided before defining invocation
      */
-    Object expectationFor(loli_Mock_Expectation expectation);
+    Object expectationFor(loli_mock_Expectation expectation);
 
     /**
      * Invocation handler for calls to mock methods
