@@ -2,7 +2,7 @@ Mock library for Apex inspired by [mockito](https://github.com/mockito/mockito) 
 Supports stubbing as well as verification  
 # Create Mocks
 Mock are prepared by calling the ```doInvocation``` method of the ```loli_mock_MockBase``` class which implements the ```loli_mock_IMock``` interface(You can also provide your own implementation).  
-The method name is provided as ```String```, the parameters as ```List<Object>``` (apex does not allow an automatic discovery of the method name and paramters).  
+The method name is provided as ```String```, the parameters as ```List<Object>``` (unfortunately apex does not allow an automatic discovery of the method name and parameters at the moment).  
 
 ```java
 // Implements the interface to mock
@@ -23,7 +23,7 @@ public class MyMock extends loli_mock_MockBase implements MyInterface {
 
 # Stubbing
 ## thenReturn ##
-There are two alternatives for stubbing behaviour:
+There are two alternatives for stubbing behaviour.
 
 ```java
 MyMock mock = new MyMock();
@@ -34,19 +34,19 @@ mock.when().invocation(mock.getInteger('Hello World', 0)).thenReturn(1);
 MyMock mock = new MyMock();
 ((MyMock) batchActionMock.when().answerFor(1)).getInteger('Hello World', 0);
 ```
-**Important**: Although the first option is more clear it *does not work* with methods returning ```void``` (some apex limits again). Therefore
+**Important**: Although the first option is more clear it *does not work* for methods returning ```void``` (some apex limits again). Therefore
 
 ```java
 MyMock mock = new MyMock();
 mock.when().invocation(mock.doSomething().thenReturn(new MyException());
 ```
-leads to a compile error. In such cases the second alternative needs to be used
+leads to a compiler error. In such cases the second alternative will work
 
 ```java
 MyMock mock = new MyMock();
 ((MyMock) mock.when().answerFor(new MyException())).doNothing();
 ```
-You can stub simple types, complex types and exceptions (by providing an instance of the exception as in the example above.
+You can stub simple types, complex types and exceptions (by providing an instance of the exception as in the example above).
 ## thenAnswer ##
 Use ```thenAnswer``` in case you want to execute additional logic while providing the answer.  
 Answers are provided by implementing the ```loli_mock_IAnswer``` interface e.g.
@@ -76,6 +76,7 @@ There are matchers for any simple types (Integer, String, Double and the like). 
 
 ```java
 mock.when().invocation(mock.getInteger((String) mock.anyObject(), (Integer) mock.anyObject()).thenAnswer(1);
+// OR
 ((MyMock) mock.when().answerFor(1)).getInteger((String) mock.anyObject(), (Integer) mock.anyObject());
 ```
 
@@ -85,11 +86,12 @@ In case a matcher is used all other arguments also need to be matchers. Therefor
 mock.when().invocation(mock.getInteger(mock.anyString(), 1).thenAnswer(1);
 ((MyMock) mock.when().answerFor(1)).getInteger(mock.anyString(), 1);
 ```
-leads to an exception.  
+leads to a compiler error.  
 In such cases use the ```anyValue``` matcher (again casting the returned value is required)
 
 ```java
 mock.when().invocation(mock.getInteger(mock.anyString(), (Integer) mock.anyValue(1)).thenAnswer(1);
+// OR
 ((MyMock) mock.when().answerFor(1)).getInteger(mock.anyString(), (Integer) mock.anyValue(1));
 ```
 ### Custom matchers ###
@@ -106,35 +108,40 @@ public class MyMatcher implements loli_mock_IMatcher {
 
 MyMock mock = new MyMock();
 mock.when().invocation(mock.getInteger(mock.matcher(new MyMatcher()), mock.anyInteger()).thenReturn(new TestException());
+// OR
 ((MyMock) mock.when().answerFor(1)).getInteger(mock.matcher(new MyMatcher()), mock.anyInteger());
 ```
 
 # Verifying #
-As for stubbing two alternatives for verifying behaviour
+As for stubbing there are two alternatives for verifying behavior
 
 ```java
 mock.verify().that(mock.getInteger('Hello World', 1)).called(1);
+// OR
 ((MyMock) mock.verify().expectationFor(loli_mock_Expectation.called(1))).getInteger('Hello World', 1);
 ```
 *Again: The first option does not work for methods returning void*
 
-## Verifying called, atMost, atLeast ##
+## Verifying ##
 You can verify the exact number of invocations, at least and at most.
 
 ### Exact number ###
 
 ```java
 mock.verify().that(mock.getInteger('Hello World', 1)).called(1);
+// OR
 ((MyMock) mock.verify().expectationFor(loli_mock_Expectation.called(1))).getInteger('Hello World', 1);
 ```
 ### At most ###
 ```java
 mock.verify().that(mock.getInteger('Hello World', 1)).atMost(1);
+// OR
 ((MyMock) mock.verify().expectationFor(loli_mock_Expectation.atMost(1))).getInteger('Hello World', 1);
 ```
 ### At least ###
 ```java
 mock.verify().that(mock.getInteger('Hello World', 1)).atLeast(1);
+// OR
 ((MyMock) mock.verify().expectationFor(loli_mock_Expectation.atLeast(1))).getInteger('Hello World', 1);
 ```
 # Other #
