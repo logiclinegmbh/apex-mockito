@@ -70,6 +70,7 @@ Instead of providing concrete arguments/parameters you can also use argument mat
 
 ```java
 mock.when().invocation(mock.getInteger(mock.anyString(), mock.anyInteger()).thenAnswer(1);
+// OR
 ((MyMock) mock.when().answerFor(1)).getInteger(mock.anyString(), mock.anyInteger());
 ```
 There are matchers for any simple types (Integer, String, Double and the like). For custom classes the ```anyObject``` can be leveraged by casting the response (again some apex limits).
@@ -84,6 +85,7 @@ In case a matcher is used all other arguments also need to be matchers. Therefor
 
 ```java
 mock.when().invocation(mock.getInteger(mock.anyString(), 1).thenAnswer(1);
+// OR
 ((MyMock) mock.when().answerFor(1)).getInteger(mock.anyString(), 1);
 ```
 leads to a compiler error.  
