@@ -4,7 +4,7 @@ public with sharing class loli_mock_PostAnswerTest {
 
     //----------------------------- Classes ----------------------------------//
 
-    private class TestException extends Exception{}
+    private class loli_mock_TestException extends Exception{}
 
     private class Mock implements loli_mock_IMock {
 
@@ -89,7 +89,7 @@ public with sharing class loli_mock_PostAnswerTest {
                 try {
                     newCannedResponse.answer.onInvocation(invocation);
                     System.assert(false);
-                } catch (TestException e) {
+                } catch (loli_mock_TestException e) {
                     System.assert(true);
                 } catch (Exception e) {
                     System.assert(false);
@@ -158,7 +158,7 @@ public with sharing class loli_mock_PostAnswerTest {
     }
 
     private static TestMethod void thenReturn_Exception() {
-        Exception answer = new TestException();
+        Exception answer = new loli_mock_TestException();
         String methodName = 'testMethod';
         List<Object> params = new List<Object> {12, 16};
         loli_mock_Invocation invocationExpected = new loli_mock_Invocation(methodName, params);
