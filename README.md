@@ -125,7 +125,7 @@ mock.verify().that(mock.getInteger('Hello World', 1)).called(1);
 *Again: The first option does not work for methods returning void*
 
 ## Verifying ##
-You can verify the exact number of invocations, at least and at most.
+You can verify the exact number of invocations, never, at least and at most.
 
 ### Exact number ###
 
@@ -134,6 +134,14 @@ mock.verify().that(mock.getInteger('Hello World', 1)).called(1);
 // OR
 ((MyMock) mock.verify().expectationFor(loli_mock_Expectation.called(1))).getInteger('Hello World', 1);
 ```
+### Never ###
+
+```java
+mock.verify().that(mock.getInteger('Hello World', 1)).never();
+// OR
+((MyMock) mock.verify().expectationFor(loli_mock_Expectation.never())).getInteger('Hello World', 1);
+```
+
 ### At most ###
 ```java
 mock.verify().that(mock.getInteger('Hello World', 1)).atMost(1);

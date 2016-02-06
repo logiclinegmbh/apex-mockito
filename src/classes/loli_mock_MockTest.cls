@@ -3,7 +3,7 @@ public with sharing class loli_mock_MockTest {
 
     //----------------------------- Classes/Interfaces ----------------------------------//
 
-    private class TestException extends Exception{}
+    private class loli_mock_TestException extends Exception{}
 
     private class Mock extends loli_mock_MockBase {
 
@@ -613,7 +613,7 @@ public with sharing class loli_mock_MockTest {
         Mock testMock = new Mock();
         testMock.when().invocation(testMock.mockMethod(params.get(0), params.get(1))).thenReturn(cannedReponse);
         testMock.when().invocation(testMock.mockMethodEmptyParameters()).thenReturn(otherCannedResponse);
-        testMock.when().invocation(testMock.mockMethod(exceptionParameters.get(0), exceptionParameters.get(1))).thenReturn(new TestException());
+        testMock.when().invocation(testMock.mockMethod(exceptionParameters.get(0), exceptionParameters.get(1))).thenReturn(new loli_mock_TestException());
 
         String response = testMock.mockMethod(params.get(0), params.get(1));
         System.assertEquals(cannedReponse, response);
@@ -626,7 +626,7 @@ public with sharing class loli_mock_MockTest {
         try {
             testMock.mockMethod(exceptionParameters.get(0), exceptionParameters.get(1));
             System.assert(false);
-        } catch (TestException e) {
+        } catch (loli_mock_TestException e) {
             System.assert(true);
         } catch (Exception e) {
             System.assert(false);
