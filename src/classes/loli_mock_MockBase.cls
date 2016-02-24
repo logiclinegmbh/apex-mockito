@@ -93,7 +93,7 @@ public abstract with sharing class loli_mock_MockBase implements loli_mock_IMock
 
     public Object doInvocation(String methodName, List<Object> parameters) {
         loli_mock_Invocation invocation = new loli_mock_Invocation(methodName, parameters);
-
+        System.debug('Mock invocation with status: ' + mockStatus.name());
         // Perform invocation based on mock state:
         if (mockStatus == Status.inExecution) {
             recordInvocation(invocation);
